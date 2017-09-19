@@ -4,7 +4,7 @@ def strip_csv(line, sep=";", quote='"'):
 
 def read_csv(path, sep=";", quote='"'):
     result = []
-    with open(path, "r") as file:
+    with open(path, "r", encoding="utf8") as file:
         header = strip_csv(file.readline(), sep, quote)
         line = file.readline()
 
