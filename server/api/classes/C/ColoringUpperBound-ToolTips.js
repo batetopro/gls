@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({10:"<div class=\"NDToolTip TType LC\"><div class=\"TTSummary\">Alias for a int, representing a color.</div></div>",54:"<div class=\"NDToolTip TType LC\"><div class=\"TTSummary\">Alias for std::vector&lt;std::pair&lt;uint, uint&gt;&gt;.</div></div>"});

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("res",["Constant"],[["RESET_WEIGHTS",,[[,"uint RESET_WEIGHTS",,,0,"File:gls.h:uint_RESET_WEIGHTS"]]]]);

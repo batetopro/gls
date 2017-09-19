@@ -1,0 +1,1280 @@
+"source";"graph";"n";"m";"deg_min";"deg_max";"deg_avg";"x";"d";"t2";"t3";"greedy";"gls";"gls_time";"comment"
+"CAR";"1-FullIns_3";"30";"100";"4";"11";"6.666666666666667";"4";"12";"9";"7";"8";"4";"0.0070040225982666016";"FILE: 1-FullIns_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-FullIns graph of order 3
+"
+"CAR";"1-FullIns_4";"93";"593";"6";"32";"12.75268817204301";"5";"33";"18";"13";"11";"5";"0.010995864868164062";"FILE: 1-FullIns_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-FullIns graph of order 4
+"
+"CAR";"1-FullIns_5";"282";"3247";"8";"95";"23.02836879432624";"6";"96";"36";"23";"14";"6";"0.05403780937194824";"FILE: 1-FullIns_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-FullIns graph of order 5
+"
+"CAR";"1-Insertions_4";"67";"232";"4";"22";"6.925373134328358";"5";"23";"9";"7";"5";"5";"0.007007122039794922";"FILE: 1-Insertions_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-Insertions graph of order 4%
+"
+"CAR";"1-Insertions_5";"202";"1227";"5";"67";"12.148514851485148";"6";"68";"17";"13";"6";"6";"0.015012979507446289";"FILE: 1-Insertions_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-Insertions graph of order 5%
+"
+"CAR";"1-Insertions_6";"607";"6337";"6";"202";"20.87973640856672";"7";"203";"33";"25";"7";"7";"0.0480349063873291";"FILE: 1-Insertions_6.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 1-Insertions graph of order 6%
+"
+"CAR";"2-FullIns_3";"52";"201";"4";"15";"7.730769230769231";"5";"16";"12";"8";"10";"5";"0.011004924774169922";"FILE: 2-FullIns_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-FullIns graph of order 3
+"
+"CAR";"2-FullIns_4";"212";"1621";"6";"55";"15.29245283018868";"6";"56";"24";"16";"14";"6";"0.028018951416015625";"FILE: 2-FullIns_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-FullIns graph of order 4
+"
+"CAR";"2-FullIns_5";"852";"12201";"8";"215";"28.640845070422536";"4";"216";"56";"31";"18";"7";"5.977224111557007";"FILE: 2-FullIns_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-FullIns graph of order 5
+"
+"CAR";"2-Insertions_3";"37";"72";"3";"9";"3.891891891891892";"5";"10";"5";"5";"4";"4";"0.007000923156738281";"FILE: 2-Insertions_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-Insertions graph of order 3%
+"
+"CAR";"2-Insertions_4";"149";"541";"4";"37";"7.261744966442953";"6";"38";"9";"9";"5";"5";"0.013009071350097656";"FILE: 2-Insertions_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-Insertions graph of order 4%
+"
+"CAR";"2-Insertions_5";"597";"3936";"5";"149";"13.185929648241206";"6";"150";"20";"17";"6";"6";"0.03402400016784668";"FILE: 2-Insertions_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 2-Insertions graph of order 5%
+"
+"CAR";"3-FullIns_3";"80";"346";"4";"19";"8.65";"7";"20";"14";"10";"12";"7";"0.007992982864379883";"FILE: 3-FullIns_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-FullIns graph of order 3
+"
+"CAR";"3-FullIns_4";"405";"3524";"6";"84";"17.40246913580247";"7";"85";"28";"20";"17";"7";"0.061042070388793945";"FILE: 3-FullIns_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-FullIns graph of order 4
+"
+"CAR";"3-FullIns_5";"2030";"33751";"8";"409";"33.252216748768475";"2";"410";"79";"40";"22";"8";"5.4398438930511475";"FILE: 3-FullIns_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-FullIns graph of order 5
+"
+"CAR";"3-Insertions_3";"56";"110";"3";"11";"3.9285714285714284";"4";"12";"5";"5";"4";"4";"0.0070040225982666016";"FILE: 3-Insertions_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-Insertions graph of order 3%
+"
+"CAR";"3-Insertions_4";"281";"1046";"4";"56";"7.444839857651245";"5";"57";"9";"9";"5";"5";"0.01601099967956543";"FILE: 3-Insertions_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-Insertions graph of order 4%
+"
+"CAR";"3-Insertions_5";"1406";"9695";"5";"281";"13.790896159317212";"6";"282";"25";"17";"6";"6";"0.06303286552429199";"FILE: 3-Insertions_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 3-Insertions graph of order 5%
+"
+"CAR";"4-FullIns_3";"114";"541";"4";"23";"9.491228070175438";"7";"24";"16";"12";"14";"7";"0.010005950927734375";"FILE: 4-FullIns_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 4-FullIns graph of order 3
+"
+"CAR";"4-FullIns_4";"690";"6650";"6";"119";"19.27536231884058";"8";"120";"36";"24";"20";"8";"0.13509488105773926";"FILE: 4-FullIns_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 4-FullIns graph of order 4
+"
+"CAR";"4-FullIns_5";"4146";"77305";"8";"695";"37.291365171249396";"2";"696";"96";"48";"26";"9";"5.839127063751221";"FILE: 4-FullIns_5.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 4-FullIns graph of order 5
+"
+"CAR";"4-Insertions_3";"79";"156";"3";"13";"3.949367088607595";"4";"14";"5";"5";"4";"4";"0.013018131256103516";"FILE: 4-Insertions_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 4-Insertions graph of order 3%
+"
+"CAR";"4-Insertions_4";"475";"1795";"4";"79";"7.557894736842106";"5";"80";"9";"9";"5";"5";"0.019013166427612305";"FILE: 4-Insertions_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 4-Insertions graph of order 4%
+"
+"CAR";"5-FullIns_3";"154";"792";"4";"27";"10.285714285714286";"8";"28";"18";"14";"16";"8";"0.021013975143432617";"FILE: 5-FullIns_3.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 5-FullIns graph of order 3
+"
+"CAR";"5-FullIns_4";"1085";"11395";"6";"160";"21.004608294930875";"9";"161";"49";"28";"23";"9";"0.30121278762817383";"FILE: 5-FullIns_4.col
+SOURCE: M. Caramia (caramia@iac.rm.cnr.it) and P. Dell'Olmo (paolo.dellolmo@uniroma1.it)
+DESCRIPTION: 5-FullIns graph of order 4
+"
+"CUL";"flat1000_50_0";"1000";"245000";"459";"520";"490.0";"50";"521";"492";"474";"126";"122";"13.913832902908325";"File: flat1000_50_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 50
+random seed = 3890013
+Creation Date: Wed Oct 12 10:31:44 1994
+Maximum degree = 520 Minimum degree = 459
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 50 specified partitions = 50
+"
+"CUL";"flat1000_60_0";"1000";"245830";"457";"524";"491.66";"60";"525";"493";"472";"125";"123";"15.756118059158325";"File: flat1000_60_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 60
+random seed = 58009135
+Creation Date: Wed Oct 12 10:33:16 1994
+Maximum degree = 524 Minimum degree = 457
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 60 specified partitions = 60
+"
+"CUL";"flat1000_76_0";"1000";"246708";"455";"532";"493.416";"76";"533";"494";"474";"122";"120";"18.442033052444458";"File: flat1000_76_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 76
+random seed = 380013584
+Creation Date: Wed Oct 12 10:34:45 1994
+Maximum degree = 532 Minimum degree = 455
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 76 specified partitions = 76
+"
+"CUL";"flat300_20_0";"300";"21375";"127";"160";"142.5";"20";"161";"144";"135";"47";"36";"5.9301910400390625";"File: flat300_20_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 20
+random seed = 871009181
+Creation Date: Mon Sep 19 08:15:40 1994
+Maximum degree = 160 Minimum degree = 127
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 20 specified partitions = 20
+"
+"CUL";"flat300_26_0";"300";"21633";"123";"158";"144.22";"26";"159";"146";"136";"45";"37";"5.720042943954468";"File: flat300_26_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 26
+random seed = 200191231
+Creation Date: Mon Sep 19 08:23:20 1994
+Maximum degree = 158 Minimum degree = 123
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 26 specified partitions = 26
+"
+"CUL";"flat300_28_0";"300";"21695";"130";"162";"144.63333333333333";"28";"163";"146";"136";"46";"36";"5.759086847305298";"File: flat300_28_0.col
+SOURCE: Joseph Culberson (joe@cs.ualberta.ca)
+DESCRIPTION: Quasi-random coloring problem
+generated with flatness = 0
+probability = 0.500
+known coloring = 28
+random seed = 700198124
+Creation Date: Mon Sep 19 08:26:27 1994
+Maximum degree = 162 Minimum degree = 130
+COLOR VERIFICATION: Using the permuted order
+under simple greedy yields the specified
+coloring number
+Color = 28 specified partitions = 28
+"
+"DSJ";"dsjc1000.1";"1000";"49629";"68";"127";"99.258";"10";"128";"112";"93";"31";"24";"5.537914991378784";"FILE: DSJC1000.1
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc1000.5";"1000";"249826";"447";"551";"499.652";"15";"552";"501";"475";"127";"126";"18.62516498565674";"FILE: DSJC1000.5
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc1000.9";"1000";"449449";"870";"924";"898.898";"216";"925";"888";"877";"321";"315";"52.01274490356445";"FILE: DSJC1000.9
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc125.1";"125";"736";"5";"23";"11.776";"5";"24";"17";"12";"8";"5";"0.06604695320129395";"FILE: DSJC125.1
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc125.5";"125";"3891";"51";"75";"62.256";"16";"76";"63";"57";"26";"18";"5.41782808303833";"FILE: DSJC125.5
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc125.9";"125";"6961";"103";"120";"111.376";"43";"121";"109";"106";"56";"45";"5.876152992248535";"FILE: DSJC125.9
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc250.1";"250";"3218";"13";"38";"25.744";"4";"39";"33";"25";"13";"9";"5.922181844711304";"FILE: DSJC250.1
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc250.5";"250";"15668";"101";"147";"125.344";"26";"148";"126";"116";"43";"33";"5.883174180984497";"FILE: DSJC250.5
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc250.9";"250";"27897";"207";"234";"223.176";"72";"235";"219";"214";"99";"80";"5.659999132156372";"FILE: DSJC250.9
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc500.1";"500";"12458";"34";"68";"49.832";"9";"69";"59";"47";"20";"14";"5.777082920074463";"FILE: DSJC500.1
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc500.5";"500";"62624";"220";"286";"250.496";"43";"287";"251";"236";"72";"59";"5.465847969055176";"FILE: DSJC500.5
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjc500.9";"500";"112437";"430";"471";"449.748";"123";"472";"443";"437";"175";"175";"6.160368919372559";"FILE: DSJC500.9
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Random graph used in the paper
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjr500.1";"500";"3555";"4";"25";"14.22";"12";"26";"23";"18";"15";"12";"0.08708000183105469";"FILE: DSJR500.1
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Geometric random graph. DSJRx.y[c] is
+a geometric graph with x nodes randomly
+distributed in the unit square, and and edge
+if the length of the corresponding line is
+less than y. This graph is then complemented
+if a "c" ends the file name. Graphs were used in
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjr500.1c";"500";"121275";"473";"497";"485.1";"85";"498";"478";"476";"109";"109";"9.198500871658325";"FILE: DSJR500.1c
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Geometric random graph. DSJRx.y[c] is
+a geometric graph with x nodes randomly
+distributed in the unit square, and and edge
+if the length of the corresponding line is
+less than y. This graph is then complemented
+if a "c" ends the file name. Graphs were used in
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"DSJ";"dsjr500.5";"500";"58862";"103";"388";"235.448";"122";"389";"234";"197";"143";"136";"5.587944030761719";"FILE: DSJR500.5
+SOURCE: David Johnson (dsj@research.att.com)
+DESCRIPTION: Geometric random graph. DSJRx.y[c] is
+a geometric graph with x nodes randomly
+distributed in the unit square, and and edge
+if the length of the corresponding line is
+less than y. This graph is then complemented
+if a "c" ends the file name. Graphs were used in
+"Optimization by Simulated Annealing: An
+Experimental Evaluation; Part II, Graph
+Coloring and Number Partitioning" by
+David S. Johnson, Cecilia R. Aragon,
+Lyle A. McGeoch and Catherine Schevon
+Operations Research, 39, 378-406 (1991)
+"
+"GOM";"qg.order100";"10000";"990000";"198";"198";"198.0";"100";"199";"199";"199";"128";"128";"12.048528909683228";"File: qg.order100.col
+Source: Carla Gomes (gomes@cs.cornell.edu)
+Description: This is an instance of the Quasigroup or Latin Square Problem
+(order 100).
+The problem corresponds to assigning colors to the 100 x 100 cells
+of an empty matrix such there are no repetitions of colors
+in each row/column of the matrix.
+Graph Structure: The graph has 10000 nodes and 990000 edges.
+Num. colors (optimal): 100
+"
+"GOM";"qg.order30";"900";"26100";"58";"58";"58.0";"30";"59";"59";"59";"32";"30";"0.6924741268157959";"File: qg.order30.col
+Source: Carla Gomes (gomes@cs.cornell.edu)
+Description: This is an instance of the Quasigroup or Latin Square Problem
+(order 30).
+The problem corresponds to assigning colors to the 30 x 30 cells
+of an empty matrix such there are no repetitions of colors
+in each row/column of the matrix.
+Graph Structure: The graph has 900 nodes and 26100 edges.
+Num. colors (optimal): 30
+"
+"GOM";"qg.order40";"1600";"62400";"78";"78";"78.0";"40";"79";"79";"79";"64";"40";"3.7666471004486084";"File: qg.order40.col
+Source: Carla Gomes (gomes@cs.cornell.edu)
+Description: This is an instance of the Quasigroup or Latin Square Problem
+(order 40).
+The problem corresponds to assigning colors to the 40 x 40 cells
+of an empty matrix such there are no repetitions of colors
+in each row/column of the matrix.
+Graph Structure: The graph has 1600 nodes and 62400 edges.
+Num. colors (optimal): 40
+"
+"GOM";"qg.order60";"3600";"212400";"118";"118";"118.0";"60";"119";"119";"119";"64";"61";"6.395517110824585";"File: qg.order60.col
+Source: Carla Gomes (gomes@cs.cornell.edu)
+Description: This is an instance of the Quasigroup or Latin Square Problem
+(order 60).
+The problem corresponds to assigning colors to the 60 x 60 cells
+of an empty matrix such there are no repetitions of colors
+in each row/column of the matrix.
+Graph Structure: The graph has 3600 nodes and 212400 edges.
+Num. colors (optimal): 60
+"
+"HOS";"abb313GPIA";"1557";"53356";"0";"151";"68.53692999357739";"8";"152";"99";"79";"14";"9";"6.106316089630127";"FILE: abb313GPIA.col
+SOURCE: Shahadat Hossain and Trond Steihaug
+DESCRIPTION: Graph obtained from a matrix partitioning problem
+in the segmented columns approach to determine
+sparse Jacobian matrices.
+Given a matrix A determine G_\Pi(A) where \Pi is a row
+partition of A. Matrix A for this graph is ABB313
+from SMTAPE package of Harwell-Boeing test matrix collection.
+"
+"HOS";"ash331GPIA";"662";"4181";"1";"23";"12.63141993957704";"4";"24";"20";"16";"10";"4";"0.05704092979431152";"FILE: ash331GPIA
+SOURCE: Shahadat Hossain and Trond Steihaug
+DESCRIPTION: Graph obtained from a matrix partitioning problem
+in the segmented columns approach to determine
+sparse Jacobian matrices.
+Given a matrix A determine G_\Pi(A) where \Pi is a row
+partition of A. Matrix A for this graph is ASH958
+from SMTAPE package of Harwell-Boeing test matrix collection.
+"
+"HOS";"ash608GPIA";"1216";"7844";"1";"20";"12.901315789473685";"4";"21";"20";"16";"9";"4";"0.11208009719848633";"FILE: ash608GPIA
+SOURCE: Shahadat Hossain and Trond Steihaug
+DESCRIPTION: Graph obtained from a matrix partitioning problem
+in the segmented columns approach to determine
+sparse Jacobian matrices.
+Given a matrix A determine G_\Pi(A) where \Pi is a row
+partition of A. Matrix A for this graph is ASH608
+from SMTAPE package of Harwell-Boeing test matrix collection.
+"
+"HOS";"ash958GPIA";"1916";"12506";"1";"24";"13.054279749478079";"4";"25";"21";"17";"10";"4";"0.3262310028076172";"FILE: ash958GPIA
+SOURCE: Shahadat Hossain and Trond Steihaug
+DESCRIPTION: Graph obtained from a matrix partitioning problem
+in the segmented columns approach to determine
+sparse Jacobian matrices.
+Given a matrix A determine G_\Pi(A) where \Pi is a row
+partition of A. Matrix A for this graph is ASH958
+from SMTAPE package of Harwell-Boeing test matrix collection.
+"
+"HOS";"will199GPIA";"701";"6772";"2";"38";"19.320970042796006";"7";"39";"34";"26";"11";"7";"0.1340930461883545";"FILE: will199GPIA.col
+SOURCE: Shahadat Hossain and Trond Steihaug
+DESCRIPTION: Graph obtained from a matrix partitioning problem
+in the segmented columns approach to determine
+sparse Jacobian matrices.
+Given a matrix A determine G_\Pi(A) where \Pi is a row
+partition of A. Matrix A for this graph is WILL199
+from SMTAPE package of Harwell-Boeing test matrix collection.
+"
+"KOS";"wap01a";"2368";"110871";"14";"288";"93.64104729729729";"41";"289";"174";"115";"62";"51";"5.827117919921875";""
+"KOS";"wap02a";"2464";"111742";"14";"294";"90.69967532467533";"40";"295";"175";"116";"61";"52";"5.817111015319824";""
+"KOS";"wap03a";"4730";"286722";"26";"344";"121.23551797040169";"40";"345";"230";"148";"74";"72";"10.075119972229004";""
+"KOS";"wap04a";"5231";"294902";"26";"351";"112.75167272032117";"40";"352";"238";"149";"68";"65";"11.37804102897644";""
+"KOS";"wap05a";"905";"43081";"9";"228";"95.20662983425414";"50";"229";"147";"106";"64";"50";"4.48216986656189";""
+"KOS";"wap06a";"947";"43571";"9";"230";"92.01900739176347";"40";"231";"147";"105";"64";"49";"5.139622926712036";""
+"KOS";"wap07a";"1809";"103368";"13";"298";"114.28192371475953";"41";"299";"188";"130";"71";"53";"5.960211992263794";""
+"KOS";"wap08a";"1870";"104176";"13";"308";"111.41818181818182";"40";"309";"189";"129";"72";"54";"5.937209844589233";""
+"LAT";"latin_square_10";"900";"307350";"683";"683";"683.0";"90";"684";"684";"684";"213";"191";"30.144304037094116";"FILE: latin_square_10.col
+SOURCE: Gary Lewandowski (lewandow@cs.wisc.edu)
+DESCRIPTION: Latin Square graph
+"
+"LEI";"le450_15a";"450";"8168";"2";"99";"36.30222222222222";"15";"100";"57";"39";"22";"16";"5.788084030151367";"FILE: le450_15a.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 36276
+number of vertices : 450
+max number of edges: 50000
+number of classes : 15
+a c m : 8401 6859 252105
+clique vector : clique sz num cliques
+--------- -----------
+2 1336
+5 108
+10 67
+15 40
+Leighton's proof : 15 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 8168
+edge density : 0.080851
+max degree : 99
+avg degree : 36.30
+min degree : 2
+"
+"LEI";"le450_15b";"450";"8169";"1";"94";"36.306666666666665";"15";"95";"56";"39";"22";"16";"5.865144968032837";"FILE: le450_15b.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 213549
+number of vertices : 450
+max number of edges: 50000
+number of classes : 15
+a c m : 8401 6859 252105
+clique vector : clique sz num cliques
+--------- -----------
+2 1336
+5 108
+10 67
+15 40
+Leighton's proof : 15 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 8169
+edge density : 0.080861
+max degree : 94
+avg degree : 36.31
+min degree : 1
+"
+"LEI";"le450_15c";"450";"16680";"18";"139";"74.13333333333334";"15";"140";"93";"70";"30";"22";"5.762070894241333";"FILE: le450_15c.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 161712
+number of vertices : 450
+max number of edges: 50000
+number of classes : 15
+a c m : 8401 6859 252105
+clique vector : clique sz num cliques
+--------- -----------
+2 3118
+5 252
+10 157
+15 94
+Leighton's proof : 15 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 16680
+edge density : 0.165108
+max degree : 139
+avg degree : 74.13
+min degree : 18
+"
+"LEI";"le450_15d";"450";"16750";"18";"138";"74.44444444444444";"15";"139";"92";"70";"31";"22";"5.853118896484375";"FILE: le450_15d.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 160056
+number of vertices : 450
+max number of edges: 50000
+number of classes : 15
+a c m : 8401 6859 252105
+clique vector : clique sz num cliques
+--------- -----------
+2 3118
+5 252
+10 157
+15 94
+Leighton's proof : 15 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 16750
+edge density : 0.165801
+max degree : 138
+avg degree : 74.44
+min degree : 18
+"
+"LEI";"le450_25a";"450";"8260";"2";"128";"36.71111111111111";"25";"129";"63";"46";"28";"25";"0.1290910243988037";"FILE: le450_25a.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 192625
+number of vertices : 450
+max number of edges: 50000
+number of classes : 25
+a c m : 8401 6859 420175
+clique vector : clique sz num cliques
+--------- -----------
+2 1336
+7 40
+16 27
+25 13
+Leighton's proof : 25 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 8260
+edge density : 0.081762
+max degree : 128
+avg degree : 36.71
+min degree : 2
+"
+"LEI";"le450_25b";"450";"8263";"2";"111";"36.724444444444444";"25";"112";"60";"43";"27";"25";"0.09607601165771484";"FILE: le450_25b.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 358531
+number of vertices : 450
+max number of edges: 50000
+number of classes : 25
+a c m : 8401 6859 420175
+clique vector : clique sz num cliques
+--------- -----------
+2 1336
+7 40
+16 27
+25 13
+Leighton's proof : 25 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 8263
+edge density : 0.081792
+max degree : 111
+avg degree : 36.72
+min degree : 2
+"
+"LEI";"le450_25c";"450";"17343";"7";"179";"77.08";"25";"180";"101";"76";"37";"28";"5.374798059463501";"FILE: le450_25c.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 247337
+number of vertices : 450
+max number of edges: 50000
+number of classes : 25
+a c m : 8401 6859 420175
+clique vector : clique sz num cliques
+--------- -----------
+2 3118
+7 94
+16 63
+25 31
+Leighton's proof : 25 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 17343
+edge density : 0.171670
+max degree : 179
+avg degree : 77.08
+min degree : 7
+"
+"LEI";"le450_25d";"450";"17425";"11";"157";"77.44444444444444";"25";"158";"99";"75";"35";"28";"5.844127893447876";"FILE: le450_25d.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 274955
+number of vertices : 450
+max number of edges: 50000
+number of classes : 25
+a c m : 8401 6859 420175
+clique vector : clique sz num cliques
+--------- -----------
+2 3118
+7 94
+16 63
+25 31
+Leighton's proof : 25 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 17425
+edge density : 0.172482
+max degree : 157
+avg degree : 77.44
+min degree : 11
+"
+"LEI";"le450_5a";"450";"5714";"13";"42";"25.395555555555557";"5";"43";"34";"25";"14";"5";"1.3749580383300781";"FILE: le450_5a.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 0
+number of vertices : 450
+max number of edges: 50000
+number of classes : 5
+a c m : 8401 6859 84035
+clique vector : clique sz num cliques
+--------- -----------
+2 1890
+3 877
+4 540
+5 175
+Leighton's proof : 5 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 5714
+edge density : 0.056560
+max degree : 42
+avg degree : 25.40
+min degree : 13
+"
+"LEI";"le450_5b";"450";"5734";"12";"42";"25.484444444444446";"5";"43";"34";"26";"13";"5";"0.9887118339538574";"FILE: le450_5b.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 41794
+number of vertices : 450
+max number of edges: 50000
+number of classes : 5
+a c m : 8401 6859 84035
+clique vector : clique sz num cliques
+--------- -----------
+2 1890
+3 877
+4 540
+5 175
+Leighton's proof : 5 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 5734
+edge density : 0.056758
+max degree : 42
+avg degree : 25.48
+min degree : 12
+"
+"LEI";"le450_5c";"450";"9803";"27";"66";"43.568888888888885";"5";"67";"52";"41";"17";"5";"3.4584429264068604";"FILE: le450_5c.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 35428
+number of vertices : 450
+max number of edges: 50000
+number of classes : 5
+a c m : 8401 6859 84035
+clique vector : clique sz num cliques
+--------- -----------
+2 4410
+3 2047
+4 1260
+5 409
+Leighton's proof : 5 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 9803
+edge density : 0.097035
+max degree : 66
+avg degree : 43.57
+min degree : 27
+"
+"LEI";"le450_5d";"450";"9757";"29";"68";"43.364444444444445";"5";"69";"52";"41";"18";"5";"0.8846251964569092";"FILE: le450_5d.col
+SOURCE: Craig Morgenstern (morgenst@riogrande.cs.tcu.edu)
+DESCRIPTION: This is a Leighton graph as described in
+F.T. Leighton.
+Journal of Research of the National Bureau of Standards,
+vol. 84, no. 6, Nov-Dec 1979, pp 489-505.
+Leighton graph
+data structure : sparse
+graph gen seed : 47927
+number of vertices : 450
+max number of edges: 50000
+number of classes : 5
+a c m : 8401 6859 84035
+clique vector : clique sz num cliques
+--------- -----------
+2 4410
+3 2047
+4 1260
+5 409
+Leighton's proof : 5 coloring
+Graph Stats
+number of vertices : 450
+nonisolated vertices: 450
+number of edges : 9757
+edge density : 0.096580
+max degree : 68
+avg degree : 43.36
+min degree : 29
+"
+"MIZ";"mug100_1";"100";"166";"3";"4";"3.32";"4";"5";"5";"4";"4";"4";"0.012008190155029297";"almost 3-colorable graph from Kuzunori Mizuno mizuno@algor.is.tsukaba.ac.jp
+"
+"MIZ";"mug100_25";"100";"166";"3";"4";"3.32";"4";"5";"5";"4";"4";"4";"0.010993003845214844";"almost 3-colorable graph from Kuzunori Mizuno mizuno@algor.is.tsukaba.ac.jp
+"
+"MIZ";"mug88_1";"88";"146";"3";"4";"3.3181818181818183";"4";"5";"5";"4";"4";"4";"0.010995864868164062";"almost 3-colorable graph from Kuzunori Mizuno mizuno@algor.is.tsukaba.ac.jp
+"
+"MIZ";"mug88_25";"88";"146";"3";"4";"3.3181818181818183";"4";"5";"5";"4";"4";"4";"0.011008024215698242";"almost 3-colorable graph from Kuzunori Mizuno mizuno@algor.is.tsukaba.ac.jp
+"
+"MYC";"c2000.5";"2000";"999836";"919";"1074";"999.836";"99";"1075";"1000";"962";"226";"223";"144.3380160331726";"FILE: C2000.5
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Random graph, 2000 nodes,
+edge probability .5
+G(n,p) graph
+graph gen seed : 4732423
+number of vertices : 2000
+max number of edges: 3000000
+edge probability : 0.500000
+data structure : sparse
+Graph Stats
+number of vertices : 2000
+nonisolated vertices: 2000
+number of edges : 999836
+edge density : 0.500168
+max degree : 1074
+avg degree : 999.84
+min degree : 919
+"
+"MYC";"c4000.5";"4000";"4000268";"1895";"2123";"2000.134";"107";"2124";"2002";"1942";"402";"402";"1297.7772369384766";"FILE: C4000.5
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Random graph, 4000 nodes,
+edge probability .5
+CAUTION: Graph takes up over 45MB when
+uncompressed!
+G(n,p) graph
+graph gen seed : 873429433
+number of vertices : 4000
+max number of edges: 9000000
+edge probability : 0.500000
+data structure : dense
+Graph Stats
+number of vertices : 4000
+nonisolated vertices: 4000
+number of edges : 4000268
+edge density : 0.500159
+max degree : 2123
+avg degree : 2000.13
+min degree : 1895
+"
+"MYC";"myciel3";"11";"20";"3";"5";"3.6363636363636362";"4";"6";"5";"4";"4";"4";"0.011008024215698242";"FILE: myciel3.col
+SOURCE: Michael Trick (trick@cmu.edu)
+DESCRIPTION: Graph based on Mycielski transformation.
+Triangle free (clique number 2) but increasing
+coloring number
+"
+"MYC";"myciel4";"23";"71";"4";"11";"6.173913043478261";"5";"12";"7";"6";"5";"5";"0.010507822036743164";"FILE: myciel4.col
+SOURCE: Michael Trick (trick@cmu.edu)
+DESCRIPTION: Graph based on Mycielski transformation.
+Triangle free (clique number 2) but increasing
+coloring number
+"
+"MYC";"myciel5";"47";"236";"5";"23";"10.042553191489361";"5";"24";"13";"9";"6";"6";"5.3367719650268555";"FILE: myciel5.col
+SOURCE: Michael Trick (trick@cmu.edu)
+DESCRIPTION: Graph based on Mycielski transformation.
+Triangle free (clique number 2) but increasing
+coloring number
+"
+"MYC";"myciel6";"95";"755";"6";"47";"15.894736842105264";"6";"48";"21";"14";"7";"7";"5.959712028503418";"FILE: myciel6.col
+SOURCE: Michael Trick (trick@cmu.edu)
+DESCRIPTION: Graph based on Mycielski transformation.
+Triangle free (clique number 2) but increasing
+coloring number
+"
+"MYC";"myciel7";"191";"2360";"7";"95";"24.712041884816752";"7";"96";"35";"23";"8";"8";"5.943789005279541";"FILE: myciel7.col
+SOURCE: Michael Trick (trick@cmu.edu)
+DESCRIPTION: Graph based on Mycielski transformation.
+Triangle free (clique number 2) but increasing
+coloring number
+"
+"MYC";"r1000.1";"1000";"14378";"10";"49";"28.756";"20";"50";"41";"34";"26";"20";"0.1916358470916748";"FILE: R1000.1.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 832834
+number of vertices : 1000
+max number of edges: 1000000
+Euclidean distance : 0.100000
+data structure : sparse
+Graph Stats
+number of vertices : 1000
+nonisolated vertices: 1000
+number of edges : 14378
+edge density : 0.028785
+max degree : 49
+avg degree : 28.76
+min degree : 10
+"
+"MYC";"r1000.1c";"1000";"485090";"943";"991";"970.18";"96";"992";"957";"951";"138";"136";"66.58387398719788";"FILE: R1000.1c.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 1232171
+number of vertices : 1000
+max number of edges: 1000000
+Euclidean distance : 0.100000
+U(n,d) complement
+data structure : dense
+Graph Stats
+number of vertices : 1000
+nonisolated vertices: 1000
+number of edges : 485090
+edge density : 0.971151
+max degree : 991
+avg degree : 970.18
+min degree : 943
+"
+"MYC";"r1000.5";"1000";"238267";"193";"781";"476.534";"234";"782";"472";"396";"275";"274";"10.01363492012024";"FILE: R1000.5.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 838288
+number of vertices : 1000
+max number of edges: 1000000
+Euclidean distance : 0.500000
+data structure : dense
+Graph Stats
+number of vertices : 1000
+nonisolated vertices: 1000
+number of edges : 238267
+edge density : 0.477011
+max degree : 781
+avg degree : 476.53
+min degree : 193
+"
+"MYC";"r125.1";"125";"209";"0";"8";"3.344";"5";"9";"7";"6";"5";"5";"0.015013933181762695";"FILE: R125.1.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 4343456
+number of vertices : 125
+max number of edges: 10000
+Euclidean distance : 0.100000
+data structure : sparse
+Graph Stats
+number of vertices : 125
+nonisolated vertices: 122
+number of edges : 209
+edge density : 0.026968
+max degree : 8
+avg degree : 3.34
+min degree : 0
+"
+"MYC";"r125.1c";"125";"7501";"113";"124";"120.016";"46";"125";"116";"116";"51";"46";"0.6474711894989014";"FILE: R125.1c.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 5757444
+number of vertices : 125
+max number of edges: 10000
+Euclidean distance : 0.100000
+U(n,d) complement
+data structure : dense
+Graph Stats
+number of vertices : 125
+nonisolated vertices: 125
+number of edges : 7501
+edge density : 0.967871
+max degree : 124
+avg degree : 120.02
+min degree : 113
+"
+"MYC";"r125.5";"125";"3838";"23";"99";"61.408";"36";"100";"61";"52";"44";"36";"3.8236889839172363";"FILE: R125.5.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 94949393
+number of vertices : 125
+max number of edges: 10000
+Euclidean distance : 0.500000
+data structure : sparse
+Graph Stats
+number of vertices : 125
+nonisolated vertices: 125
+number of edges : 3838
+edge density : 0.495226
+max degree : 99
+avg degree : 61.41
+min degree : 23
+"
+"MYC";"r250.1";"250";"867";"1";"13";"6.936";"8";"14";"13";"10";"9";"8";"0.05504012107849121";"FILE: R250.1.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 943910
+number of vertices : 250
+max number of edges: 50000
+Euclidean distance : 0.100000
+data structure : sparse
+Graph Stats
+number of vertices : 250
+nonisolated vertices: 250
+number of edges : 867
+edge density : 0.027855
+max degree : 13
+avg degree : 6.94
+min degree : 1
+"
+"MYC";"r250.1c";"250";"30227";"234";"249";"241.816";"64";"250";"238";"236";"76";"67";"5.13663387298584";""
+"MYC";"r250.5";"250";"14849";"53";"191";"118.792";"65";"192";"119";"99";"79";"71";"5.472877025604248";"FILE: R250.5.col
+SOURCE: Generated by Michael Trick
+using ggen, a program of
+Craig Morgenstern
+DESCRIPTION: Geometric random graph
+Rx.y[c] is a geometric
+graph on x vertices with
+an edge if the distance between
+the corresponding nodes is .y or
+less. A "c" denotes the complement
+of such a graph.
+U(n,d) graph
+graph gen seed : 943933
+number of vertices : 250
+max number of edges: 50000
+Euclidean distance : 0.500000
+data structure : sparse
+Graph Stats
+number of vertices : 250
+nonisolated vertices: 250
+number of edges : 14849
+edge density : 0.477076
+max degree : 191
+avg degree : 118.79
+min degree : 53
+"
+"REG";"fpsol2.i.1";"496";"11654";"0";"252";"46.99193548387097";"65";"253";"79";"67";"65";"65";"0.07105207443237305";"File: fpsol2.i.1.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #1 from register allocation file -
+"
+"REG";"fpsol2.i.2";"451";"8691";"0";"346";"38.5410199556541";"30";"347";"53";"35";"30";"30";"0.07005095481872559";"File: fpsol2.i.2.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #2 from register allocation file -
+"
+"REG";"fpsol2.i.3";"425";"8688";"0";"346";"40.88470588235294";"30";"347";"53";"35";"30";"30";"0.07004904747009277";"File: fpsol2.i.3.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #3 from register allocation file -
+"
+"REG";"inithx.i.1";"864";"18707";"0";"502";"43.30324074074074";"54";"503";"74";"57";"54";"54";"0.15311288833618164";"File: inithx.i.1.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #1 from register allocation file inithx.i
+"
+"REG";"inithx.i.2";"645";"13979";"0";"541";"43.345736434108524";"31";"542";"52";"38";"31";"31";"0.14009404182434082";"File: inithx.i.2.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #2 from register allocation file inithx.i
+"
+"REG";"inithx.i.3";"621";"13969";"0";"542";"44.988727858293075";"31";"543";"52";"38";"31";"31";"0.10407304763793945";"File: inithx.i.3.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #3 from register allocation file inithx.i
+"
+"REG";"mulsol.i.1";"197";"3925";"0";"121";"39.84771573604061";"49";"122";"65";"51";"49";"49";"0.03802609443664551";"File: mulsol.i.1.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #1 from register allocation file mulsol.i
+"
+"REG";"mulsol.i.2";"188";"3885";"0";"156";"41.329787234042556";"31";"157";"53";"33";"31";"31";"0.03902792930603027";"File: mulsol.i.2.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #2 from register allocation file mulsol.i
+"
+"REG";"mulsol.i.3";"184";"3916";"0";"157";"42.56521739130435";"31";"158";"54";"33";"31";"31";"0.03902482986450195";"File: mulsol.i.3.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #3 from register allocation file mulsol.i
+"
+"REG";"mulsol.i.4";"185";"3946";"0";"158";"42.65945945945946";"31";"159";"54";"33";"31";"31";"0.038027048110961914";"File: mulsol.i.4.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #4 from register allocation file mulsol.i
+"
+"REG";"mulsol.i.5";"186";"3973";"0";"159";"42.72043010752688";"31";"160";"55";"33";"31";"31";"0.040025949478149414";"File: mulsol.i.5.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #5 from register allocation file mulsol.i
+"
+"REG";"zeroin.i.1";"211";"4100";"0";"111";"38.86255924170616";"49";"112";"54";"51";"49";"49";"0.027032136917114258";"File: zeroin.i.1.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #1 from register allocation file zeroin.i
+"
+"REG";"zeroin.i.2";"211";"3541";"0";"140";"33.56398104265403";"30";"141";"41";"32";"30";"30";"0.02802300453186035";"File: zeroin.i.2.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #2 from register allocation file zeroin.i
+"
+"REG";"zeroin.i.3";"206";"3540";"0";"140";"34.36893203883495";"30";"141";"41";"32";"30";"30";"0.027019023895263672";"File: zeroin.i.3.col
+SOURCE: Gary Lewandowski (gary@cs.wisc.edu)
+DESCRIPTION: Coloring problem generated from a register allocation
+problem based on real code.
+graph #3 from register allocation file zeroin.i
+"
+"SCH";"school1";"385";"19095";"1";"282";"99.1948051948052";"14";"283";"117";"98";"42";"14";"0.5379312038421631";"FILE: school1.col
+Source: Gary Lewandowski (lewandow@cs.wisc.edu)
+Description: Class Scheduling Graph
+Final Schedules, all courses
+"
+"SCH";"school1_nsh";"352";"14612";"1";"232";"83.02272727272727";"14";"233";"101";"84";"39";"14";"0.6579639911651611";"FILE: school1_nsh.col
+Source: Gary Lewandowski (lewandow@cs.wisc.edu)
+Description: Class Scheduling Graph
+Final Schedules, no study halls
+"
+"SGB";"anna";"138";"493";"1";"71";"7.144927536231884";"11";"72";"15";"12";"12";"11";"0.012009143829345703";"FILE: anna.col
+Translated from Stanford GraphBase File: anna.gb
+Stanford GraphBase ID: book(?anna?,138,0,1,239,0,0,0)
+"
+"SGB";"david";"87";"406";"1";"82";"9.333333333333334";"11";"83";"16";"12";"12";"11";"0.011008024215698242";"FILE: david.col
+Translated from Stanford GraphBase File: david.gb
+Stanford GraphBase ID: book(?david?,87,0,1,64,0,0,0)
+"
+"SGB";"games120";"120";"638";"7";"13";"10.633333333333333";"9";"14";"13";"11";"9";"9";"0.012008905410766602";"FILE: games120.col
+Translated from Stanford GraphBase File: games120.gb
+Stanford GraphBase ID: games(120,0,0,0,0,0,128,0)
+"
+"SGB";"homer";"561";"1628";"0";"99";"5.803921568627451";"13";"100";"25";"18";"15";"13";"0.025022029876708984";"FILE: homer.col
+Translated from Stanford GraphBase File: homer.gb
+Stanford GraphBase ID: book(?homer?,561,0,1,24,0,0,0)
+"
+"SGB";"huck";"74";"301";"1";"53";"8.135135135135135";"11";"54";"11";"11";"11";"11";"0.010007858276367188";"FILE: huck.col
+Translated from Stanford GraphBase File: huck.gb
+Stanford GraphBase ID: book(?huck?,74,0,1,43,0,0,0)
+"
+"SGB";"jean";"80";"254";"0";"36";"6.35";"10";"37";"12";"11";"10";"10";"0.0090179443359375";"FILE: jean.col
+Translated from Stanford GraphBase File: jean.gb
+Stanford GraphBase ID: book(?jean?,80,0,1,356,0,0,0)
+"
+"SGB";"miles1000";"128";"3216";"13";"86";"50.25";"42";"87";"57";"49";"44";"42";"2.9951610565185547";"FILE: miles1000.col
+Translated from Stanford GraphBase File: miles1000.gb
+Stanford GraphBase ID: miles(128,0,0,0,1000,127,0)
+"
+"SGB";"miles1500";"128";"5198";"28";"106";"81.21875";"73";"107";"84";"78";"76";"73";"0.39936184883117676";"FILE: miles1500.col
+Translated from Stanford GraphBase File: miles1500.gb
+Stanford GraphBase ID: miles(128,0,0,0,1500,127,0)
+"
+"SGB";"miles250";"128";"387";"0";"16";"6.046875";"8";"17";"13";"10";"9";"8";"0.01101994514465332";"FILE: miles250.col
+Translated from Stanford GraphBase File: miles250.gb
+Stanford GraphBase ID: miles(128,0,0,0,250,127,0)
+"
+"SGB";"miles500";"128";"1170";"3";"38";"18.28125";"20";"39";"29";"25";"22";"20";"0.01901698112487793";"FILE: miles500.col
+Translated from Stanford GraphBase File: miles500.gb
+Stanford GraphBase ID: miles(128,0,0,0,500,127,0)
+"
+"SGB";"miles750";"128";"2113";"6";"64";"33.015625";"31";"65";"42";"37";"34";"31";"0.1821269989013672";"FILE: miles750.col
+Translated from Stanford GraphBase File: miles750.gb
+Stanford GraphBase ID: miles(128,0,0,0,750,127,0)
+"
+"SGB";"queen10_10";"100";"1470";"27";"35";"29.4";"10";"36";"32";"28";"16";"11";"5.729623079299927";"FILE: queen10_10.col
+Translated from Stanford GraphBase File: queen10_10.gb
+Stanford GraphBase ID: gunion(board(10,10,0,0,-1,0,0),board(10,10,0,0,-2,0,0),0,0)
+"
+"SGB";"queen11_11";"121";"1980";"30";"40";"32.72727272727273";"11";"41";"35";"31";"17";"13";"5.9381959438323975";"FILE: queen11_11.col
+Translated from Stanford GraphBase File: queen11_11.gb
+Stanford GraphBase ID: gunion(board(11,11,0,0,-1,0,0),board(11,11,0,0,-2,0,0),0,0)
+"
+"SGB";"queen12_12";"144";"2596";"33";"43";"36.05555555555556";"12";"44";"38";"34";"20";"14";"5.941219091415405";"FILE: queen12_12.col
+Translated from Stanford GraphBase File: queen12_12.gb
+Stanford GraphBase ID: gunion(board(12,12,0,0,-1,0,0),board(12,12,0,0,-2,0,0),0,0)
+"
+"SGB";"queen13_13";"169";"3328";"36";"48";"39.38461538461539";"13";"49";"43";"37";"21";"15";"5.881145000457764";"FILE: queen13_13.col
+Translated from Stanford GraphBase File: queen13_13.gb
+Stanford GraphBase ID: gunion(board(13,13,0,0,-1,0,0),board(13,13,0,0,-2,0,0),0,0)
+"
+"SGB";"queen14_14";"196";"4186";"39";"51";"42.714285714285715";"14";"52";"46";"40";"23";"16";"5.924188137054443";"FILE: queen14_14.col
+Translated from Stanford GraphBase File: queen14_14.gb
+Stanford GraphBase ID: gunion(board(14,14,0,0,-1,0,0),board(14,14,0,0,-2,0,0),0,0)
+"
+"SGB";"queen15_15";"225";"5180";"42";"56";"46.044444444444444";"15";"57";"49";"43";"25";"17";"5.904671907424927";"FILE: queen15_15.col
+Translated from Stanford GraphBase File: queen15_15.gb
+Stanford GraphBase ID: gunion(board(15,15,0,0,-1,0,0),board(15,15,0,0,-2,0,0),0,0)
+"
+"SGB";"queen16_16";"256";"6320";"45";"59";"49.375";"2";"60";"54";"46";"25";"18";"5.841167211532593";"FILE: queen16_16.col
+Translated from Stanford GraphBase File: queen16_16.gb
+Stanford GraphBase ID: gunion(board(16,16,0,0,-1,0,0),board(16,16,0,0,-2,0,0),0,0)
+"
+"SGB";"queen5_5";"25";"160";"12";"16";"12.8";"5";"17";"13";"13";"8";"5";"0.01150822639465332";"FILE: queen5_5.col
+Translated from Stanford GraphBase File: queen5_5.sgb
+Stanford GraphBase ID: gunion(board(5,5,0,0,-1,0,0),board(5,5,0,0,-2,0,0),0,0)
+"
+"SGB";"queen6_6";"36";"290";"15";"19";"16.11111111111111";"7";"20";"16";"16";"11";"7";"0.15210604667663574";"FILE: queen6_6.col
+Translated from Stanford GraphBase File: queen6_6.sgb
+Stanford GraphBase ID: gunion(board(6,6,0,0,-1,0,0),board(6,6,0,0,-2,0,0),0,0)
+"
+"SGB";"queen7_7";"49";"476";"18";"24";"19.428571428571427";"7";"25";"21";"19";"10";"7";"0.024513959884643555";"FILE: queen7_7.col
+Translated from Stanford GraphBase File: queen7_7.sgb
+Stanford GraphBase ID: gunion(board(7,7,0,0,-1,0,0),board(7,7,0,0,-2,0,0),0,0)
+"
+"SGB";"queen8_12";"96";"1368";"25";"32";"28.5";"12";"33";"31";"27";"15";"12";"0.027032852172851562";"FILE: queen8_12.col
+Translated from Stanford GraphBase File: queen8_12.gb
+Stanford GraphBase ID: gunion(board(8,12,0,0,-1,0,0),board(8,12,0,0,-2,0,0),0,0)
+"
+"SGB";"queen8_8";"64";"728";"21";"27";"22.75";"9";"28";"24";"22";"13";"9";"0.25116395950317383";"FILE: queen8_8.col
+Translated from Stanford GraphBase File: queen8_8.gb
+Stanford GraphBase ID: gunion(board(8,8,0,0,-1,0,0),board(8,8,0,0,-2,0,0),0,0)
+"
+"SGB";"queen9_9";"81";"1056";"24";"32";"26.074074074074073";"10";"33";"27";"25";"16";"10";"0.18913507461547852";"FILE: queen9_9.col
+Translated from Stanford GraphBase File: queen9_9.sgb
+Stanford GraphBase ID: gunion(board(9,9,0,0,-1,0,0),board(9,9,0,0,-2,0,0),0,0)
+"
+"EXP";"cti";"16840";"48232";"3";"6";"4210.0";"2";"7";"7";"7";"6";"4";"5.81266713142395";""
+"EXP";"simple";"6";"7";"2";"3";"3.0";"2";"4";"3";"3";"3";"3";"0.010006904602050781";""

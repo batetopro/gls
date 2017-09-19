@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("med",["Constant"],[["Median",,[[,,,,0,"File:gls.h:Median"]]]]);

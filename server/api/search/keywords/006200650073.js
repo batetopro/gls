@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("bes",["Function"],[["best_neighbours",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.best_neighbours","CClass:GuidedLocalSearch:best_neighbours"]]]]);

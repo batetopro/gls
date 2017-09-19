@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sim",["Function","Constant"],[["Simple",,[["ColoringUpperBound","simple",,,0,"File:gls.h:ColoringUpperBound.simple","CClass:ColoringUpperBound:simple"],[,,,,1,"File:gls.h:Simple"]]]]);

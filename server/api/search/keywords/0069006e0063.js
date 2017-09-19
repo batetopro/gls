@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("inc",["Function"],[["increment_score",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.increment_score","CClass:GuidedLocalSearch:increment_score"]]]]);

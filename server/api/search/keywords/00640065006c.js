@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("del",["Variable"],[["delta_conflicts",,[["Move",,,,0,"File:gls.h:Move.delta_conflicts","CClass:Move:delta_conflicts"]]],["delta_guidance",,[["Move",,,,0,"File:gls.h:Move.delta_guidance","CClass:Move:delta_guidance"]]]]);

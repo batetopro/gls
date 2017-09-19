@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("upp",["Constant"],[["UPPER_BOUND",,[[,"ColoringUpperBoundMethod UPPER_BOUND",,,0,"File:gls.h:ColoringUpperBoundMethod_UPPER_BOUND"]]]]);

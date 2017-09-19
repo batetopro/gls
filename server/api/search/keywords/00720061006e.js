@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ran",["Function","Constant"],[["Random",,[["ColoringBuilder","random",,,0,"File:gls.h:ColoringBuilder.random","CClass:ColoringBuilder:random"],[,,,,1,"File:gls.h:Random"]]],["RandomStart",,[[,,,,1,"File:gls.h:RandomStart"]]]]);

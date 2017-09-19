@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("get",["Function"],[["get_colors",,[["EpocheRunner",,,,0,"File:gls.h:EpocheRunner.get_colors","CClass:EpocheRunner:get_colors"]]],["get_degrees",,[["ColoringUpperBound",,,,0,"File:gls.h:ColoringUpperBound.get_degrees","CClass:ColoringUpperBound:get_degrees"]]]]);

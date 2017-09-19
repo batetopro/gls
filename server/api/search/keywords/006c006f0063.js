@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("loc",["Constant"],[["LocalMin",,[[,,,,0,"File:gls.h:LocalMin"]]]]);

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("gre",["Function","Constant"],[["Greedy",,[["ColoringBuilder","greedy",,,0,"File:gls.h:ColoringBuilder.greedy","CClass:ColoringBuilder:greedy"],[,,,,1,"File:gls.h:Greedy"]]]]);

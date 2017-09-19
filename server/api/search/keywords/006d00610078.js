@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("max",["Constant"],[["MAX_ITER",,[[,"uint MAX_ITER",,,0,"File:gls.h:uint_MAX_ITER"]]],["MAX_NO_IMPROVE",,[[,"uint MAX_NO_IMPROVE",,,0,"File:gls.h:uint_MAX_NO_IMPROVE"]]],["Maximal",,[[,,,,0,"File:gls.h:Maximal"]]],["MaxIterations",,[[,,,,0,"File:gls.h:MaxIterations"]]]]);

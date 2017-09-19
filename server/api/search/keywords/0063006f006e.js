@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("con",["Constant","Variable"],[["Configuration",,[[,"Configuration fields",,,0,"File:gls.h:Configuration_fields"]]],["conflicts",,[["GuidedLocalSearch",,,,1,"File:gls.h:GuidedLocalSearch.conflicts","CClass:GuidedLocalSearch:conflicts"],["Score",,,,1,"File:gls.h:Score.conflicts","CClass:Score:conflicts"]]]]);

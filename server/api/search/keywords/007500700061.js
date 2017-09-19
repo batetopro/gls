@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("upa",["Type","Function"],[["upair",,[[,,,,0,"File:gls.h:upair"]]],["upair_comparator",,[[,,,,1,"File:gls.h:upair_comparator"]]],["upairs",,[[,,,,0,"File:gls.h:upairs"]]]]);

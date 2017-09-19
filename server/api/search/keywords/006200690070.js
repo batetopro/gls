@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("bip",["Function","Constant"],[["Bipartite",,[["ColoringBuilder","bipartite",,,0,"File:gls.h:ColoringBuilder.bipartite","CClass:ColoringBuilder:bipartite"],[,,,,1,"File:gls.h:Bipartite"]]]]);

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("scr",["Constant"],[["Scratch",,[[,,,,0,"File:gls.h:Scratch"]]]]);

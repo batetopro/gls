@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("CClass:ColoringBuilder","ColoringBuilder");NDSummary.OnSummaryLoaded("CClass:ColoringBuilder",[["C/C++","C"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[72,0,0,"ColoringBuilder"],[73,0,2,"Functions","Functions"],[74,0,1,"random","random"],[58,0,1,"bipartite","bipartite"],[76,0,1,"greedy","greedy"]]);

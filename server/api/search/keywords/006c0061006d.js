@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("lam",["Constant"],[["LAMBDA",,[[,"uint LAMBDA",,,0,"File:gls.h:uint_LAMBDA"]]]]);

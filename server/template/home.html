@@ -1,0 +1,678 @@
+<script>
+var G = {
+    groups: {},
+    graphs: [],
+    random_color: function() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    },
+    draw: function(){
+        var data = $("#graph-editor").val().split("\n");
+
+        var header = data[0].split(" ");
+        var N = parseInt(header[0]), M = parseInt(header[1]);
+        if(isNaN(N)){return;}
+
+        var K = 0;
+        for(var k = 1; k <= N; k++){
+            data[k] = data[k].split(" ");
+            for(var j = 0; j < data[k].length; j++){
+                data[k][j] = parseInt(data[k][j]);
+            }
+            if (K < data[k][0]){
+                K = data[k][0];
+            }
+        }
+
+        var C = [];
+        for (var c =0; c <= K+1; c++){
+            C.push(G.random_color());
+        }
+
+        var nodes = [];
+        var edges = [];
+
+        for(var k = 1; k <= N; k++){
+            nodes.push({id: k, color: C[data[k][0]+1]});
+            for(var j = 1; j < data[k].length; j++){
+                edges.push({from: k, to: data[k][j]});
+            }
+        }
+
+        var data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        var options = {
+          nodes: {
+            shape: 'dot',
+            scaling: {
+              min: 10,
+              max: 30
+            },
+            font: {
+              size: 12,
+              face: 'Tahoma'
+            }
+          },
+          edges: {
+            width: 0.15,
+            color: {inherit: 'from'},
+            smooth: {
+              type: 'continuous'
+            }
+          },
+          physics: {
+            forceAtlas2Based: {
+                gravitationalConstant: -26,
+                centralGravity: 0.005,
+                springLength: 230,
+                springConstant: 0.18
+            },
+            maxVelocity: 146,
+            solver: 'forceAtlas2Based',
+            timestep: 0.35,
+            stabilization: {iterations: 150}
+          },
+          interaction: {
+            tooltipDelay: 200,
+            hideEdgesOnDrag: true
+          },
+          height: '426px',
+          width: '568px'
+        };
+
+        $("#mynetwork").html("");
+        var container = document.getElementById('mynetwork');
+        var network = new vis.Network(container, data, options);
+
+        console.log("DRAW: ", N, M, K);
+    },
+    parse_csv: function(data){
+        var header = [];
+        var lines = data.split("\n");
+        var result = [];
+        for(var i in lines){
+            if(lines[i].length == 0){continue;}
+            var parts = lines[i].substring(1, lines[i].length-1).split('";"');
+            if (i == 0){
+                header = parts;
+                continue;
+            }
+
+            var entry = {};
+            for(var h in header){
+                if(h >= parts.length){
+                    entry[header[h]] = "";
+                } else {
+                    entry[header[h]] = parts[h];
+                }
+            }
+
+            result.push(entry);
+        }
+        return result;
+    },
+    graph_details: function(g){
+
+        $("#graph-n").text(g.n);
+        $("#graph-m").text(g.m);
+        $("#graph-k").text(g.gls + " / " + g.x);
+        $("#graph-deg_min").text(g.deg_min);
+        $("#graph-deg_max").text(g.deg_max);
+        $("#graph-deg_avg").text(g.deg_avg);
+        $("#graph-name").text(g.graph);
+        $("#graph-source").text(g.source);
+        $("#graph-t2").text(g.t2);
+        $("#graph-t3").text(g.t3);
+        $("#graph-greedy").text(g.greedy);
+        $("#graph-comment").text(g.comment);
+
+        $("#mynetwork").html('<div class="loader"><i class="fa fa-cog fa-spin fa-3x fa-fw"></i><strong>Loading</strong></div>');
+        $("#visualization").modal("show");
+        $.get("/api/coloring/"+g.source+"/"+g.graph, {}, function(resp){
+            $("#graph-editor").text(resp);
+            if(g.n > 100){
+                $("#mynetwork").html('<div class="loader"><i class="fa fa-question-circle"></i><strong>This graph is big and can slow down your computer. Click to show visualization.</strong></div>');
+                $("#mynetwork .loader").on("click", function(){
+                    $("#mynetwork").html('<div class="loader"><i class="fa fa-cog fa-spin fa-3x fa-fw"></i><strong>Loading</strong></div>');
+                    setTimeout(function(){
+                        G.draw();
+                    }, 200);
+                });
+            } else {
+                G.draw();
+            }
+        });
+    },
+    graph_moves: function(g, bs){
+        var names = ["clean","asp_dynamic","aspiration","dynamic","keep","asp_keep"];
+        var view = "";
+        for(var i in names){
+            var name = names[i];
+            var path = "/api/moves/" + g.source + "/" + g.graph + "/" + bs + "/" + name;
+            view += '<div class="col-md-6">';
+            view += '<img style="width: 100%;" src="'+path+'">';
+            view += '</div>';
+        }
+        $("#experiment-moves").html(view);
+    },
+    graph_meta: function(g, field){
+        var SW = ["1","2","4","8","16","32"];
+        var view = "";
+        for(var i in SW){
+            var sw = SW[i];
+            var path = "/api/meta/" + g.source + "/" + g.graph + "/" + sw + "/" + field;
+            view += '<div class="col-md-6">';
+            view += '<img style="width: 100%;" src="'+path+'">';
+            view += '</div>';
+        }
+        $("#experiment-meta").html(view);
+    },
+    graph_strategy: function(g){
+        var path = "/api/strategy/" + g.source + "/" + g.graph;
+        $.get(path, {}, function(resp){
+            var data = G.parse_csv(resp);
+            $('#table-strategy').dataTable({
+                data: data,
+                deferRender: true,
+                destroy: true,
+                order: [[ 3, "asc" ], [ 4, "asc" ], [ 5, "asc" ]],
+                pageLength: 25,
+                columns: [
+                    {
+                        data: "init",
+                        searchable: true,
+                        sortable: true,
+                        className: 'centered'
+                    },{
+                        data: "source",
+                        searchable: true,
+                        sortable: true,
+                        className: 'centered'
+                    },{
+                        data: "destination",
+                        searchable: true,
+                        sortable: true,
+                        className: 'centered'
+                    },{
+                        data: "k",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "time",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "iterations",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "improvements",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    }
+                  ]
+                }
+            );
+        });
+    },
+    graph_experiments(g){
+        $("#experiment-n").text(g.n);
+        $("#experiment-m").text(g.m);
+        $("#experiment-k").text(g.gls + " / " + g.x);
+        $("#experiment-deg_min").text(g.deg_min);
+        $("#experiment-deg_max").text(g.deg_max);
+        $("#experiment-deg_avg").text(g.deg_avg);
+        $("#experiment-name").text(g.graph);
+        $("#experiment-source").text(g.source);
+        $("#experiment-t2").text(g.t2);
+        $("#experiment-t3").text(g.t3);
+        $("#experiment-greedy").text(g.greedy);
+        $("#experiment-comment").text(g.comment);
+
+        G.graph_moves(g, $("#experiment-moves-init").val());
+        $("#experiment-moves-init").change(function(){
+            G.graph_moves(g, $("#experiment-moves-init").val());
+        });
+
+        G.graph_strategy(g);
+
+        G.graph_meta(g, $("#experiment-meta-field").val());
+        $("#experiment-meta-field").change(function(){
+            G.graph_meta(g, $("#experiment-meta-field").val());
+        });
+
+        $("#experiments").modal("show");
+    },
+    init: function(){
+        $.getJSON("/api/graphs", {}, function(resp){
+            G.graphs = [];
+            G.groups = resp.data;
+            for(var k in G.groups){
+                var gr = G.groups[k];
+                for(var j in gr.graphs){
+                    gr.graphs[j].n = parseInt(gr.graphs[j].n);
+                    gr.graphs[j].m = parseInt(gr.graphs[j].m);
+                    gr.graphs[j].gls = parseInt(gr.graphs[j].gls);
+                    gr.graphs[j].x = parseInt(gr.graphs[j].x);
+                    gr.graphs[j].deg_avg = parseFloat(gr.graphs[j].deg_avg).toFixed(3);
+                    G.graphs.push(gr.graphs[j]);
+                }
+            }
+
+            $('#graphs').dataTable({
+                data: G.graphs,
+                deferRender: true,
+                destroy: true,
+                order: [[ 0, "asc" ], [ 1, "asc" ]],
+                pageLength: 25,
+                columns: [
+                    {
+                        data: "source",
+                        searchable: true,
+                        sortable: true,
+                        //className: 'centered',
+                        width: 20,
+                        createdCell: function (td, cellData, graph, row, col) {
+                            var g = G.groups[graph.source];
+                            var content = "";
+                            content += "<strong>Author: </strong>" + g.author + "<br>";
+                            content += "<strong>Email: </strong>" + g.mail + "<br>";
+                            content += "<strong>Comment: </strong>" + g.comment.replace(new RegExp("\n", 'g'), '<br>');
+
+                            var view = graph.source;
+                            view += '<i class="fa fa-question-circle question" data-toggle="popover" title="'+graph.source+'" aria-hidden="true" data-content="'+content+'"></i>';
+                            $(td).html(view);
+                            $(td).find("i").popover({trigger: "hover", html: true});
+                        }
+                    },{
+                        data: "graph",
+                        searchable: true,
+                        sortable: true,
+                        createdCell: function (td, cellData, graph, row, col) {
+                            var view = "";
+                            if(graph.experiment){
+                                view += '<span class="experiment"><i class="fa fa-flask" aria-hidden="true"></i></span>';
+                            }
+                            view += '<span class="link">' + graph.graph + '</span>';
+
+                            $(td).html(view);
+
+                            $(td).find(".link").on("click", function(){
+                                G.graph_details(graph);
+                            });
+                            $(td).find(".experiment").on("click", function(){
+                                G.graph_experiments(graph);
+                            });
+                        }
+                        //className: 'centered',
+                        //width: 200
+                    },{
+                        data: "n",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "m",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "deg_avg",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 20
+                    },{
+                        data: "x",
+                        searchable: false,
+                        sortable: true,
+                        className: 'align-right',
+                        width: 10
+                    },{
+                        data: "gls",
+                        searchable: false,
+                        sortable: true,
+                        createdCell: function (td, cellData, graph, row, col) {
+                            if(graph.gls == graph.x){ $(td).addClass("success"); }
+                            else if(graph.gls < graph.x){ $(td).addClass("info"); }
+                            else if(graph.x == 2){$(td).addClass("warning");}
+                            else {$(td).addClass("danger");}
+
+                            var view = graph.gls;
+                            view += '<i class="fa fa-question-circle question" data-toggle="tooltip" title="Time: '+parseFloat(graph.gls_time).toFixed(3)+'" aria-hidden="true"></i>'
+                            $(td).html(view);
+                            $(td).find("i").tooltip();
+                        },
+                        className: 'align-right',
+                        width: 10
+                    }
+                  ]
+                }
+            );
+        });
+    }
+};
+$(function(){
+    G.init();
+});
+</script>
+<style>
+.title{
+    margin: 0;
+    text-align: center;
+    display: block;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-title{ float: left;}
+
+#mynetwork {
+    width: 568px;
+    height: 426px;
+    border: 1px solid lightgray;
+}
+
+#tab-preview .col-xs-4{
+    text-align: center;
+}
+
+.question{
+    margin-left: 12px;
+}
+
+.experiment{
+    margin-right: 8px;
+}
+</style>
+
+
+
+
+<div class="modal fade" id="visualization">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Coloring visualization</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+              <tr>
+                <th>Name:</th>
+                <td id="graph-name"></td>
+                <th>Source:</th>
+                <td id="graph-source"></td>
+              </tr>
+          </table>
+          <ul class="nav nav-pills">
+            <li class="active">
+                <a href="#tab-preview" data-toggle="tab">Preview</a>
+            </li>
+            <li class="">
+                <a href="#tab-editor" data-toggle="tab">Editor</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-preview">
+                <div id="mynetwork"></div>
+                <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+                    <tr>
+                        <th>N = </th>
+                        <td id="graph-n"></td>
+                        <th>M = </th>
+                        <td id="graph-m"></td>
+                        <th>K = </th>
+                        <td id="graph-k"></td>
+                    </tr>
+                    <tr>
+                        <th>min deg = </th>
+                        <td id="graph-deg_min"></td>
+                        <th>max deg = </th>
+                        <td id="graph-deg_max"></td>
+                        <th>avg deg = </th>
+                        <td id="graph-deg_avg"></td>
+                    </tr>
+                    <tr>
+                        <th>T2 = </th>
+                        <td id="graph-t2"></td>
+                        <th>T3 = </th>
+                        <td id="graph-t3"></td>
+                        <th>Greedy = </th>
+                        <td id="graph-greedy"></td>
+                    </tr>
+
+                </table>
+                <strong>Comment:</strong>
+                <br>
+                <pre id="graph-comment"></pre>
+            </div>
+            <div class="tab-pane" id="tab-editor">
+<textarea class="form-control" rows="30" id="graph-editor" disabled>8 24
+0
+0
+1 1 2
+1 1 2
+2 1 2 3 4
+2 1 2 3 4
+3 1 2 3 4 5 6
+3 1 2 3 4 5 6
+</textarea>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="experiments">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Experiments</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+              <tr>
+                <th>Name:</th>
+                <td id="experiment-name"></td>
+                <th>Source:</th>
+                <td id="experiment-source"></td>
+              </tr>
+          </table>
+          <ul class="nav nav-pills">
+            <li class="active">
+                <a href="#tab-moves" data-toggle="tab">Moves</a>
+            </li>
+            <li>
+                <a href="#tab-strategy" data-toggle="tab">Strategy</a>
+            </li>
+            <li>
+                <a href="#tab-meta" data-toggle="tab">Meta</a>
+            </li>
+            <li>
+                <a href="#tab-stats" data-toggle="tab">Stats</a>
+            </li>
+          </ul>
+          <hr>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-moves">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <label for="experiment-moves-init" style="margin-top: 8px;">
+                            Initialization:
+                        </label>
+                    </div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="experiment-moves-init">
+                            <option value="1">Greedy</option>
+                            <option value="2">Bipartite</option>
+                            <option value="0">Random</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div id="experiment-moves" class="row">
+
+                </div>
+            </div>
+            <div class="tab-pane" id="tab-strategy">
+                <table id="table-strategy" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover">
+                    <thead class="thead-inverse">
+                      <tr>
+                        <th>Epochs</th>
+                        <th>Source</th>
+                        <th>Dest.</th>
+                        <th>K</th>
+                        <th>Time</th>
+                        <th>Iter.</th>
+                        <th>Impr.</th>
+                      </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="tab-pane" id="tab-stats">
+                <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+                    <tr>
+                        <th>N = </th>
+                        <td id="experiment-n"></td>
+                    <tr>
+                    </tr>
+                        <th>M = </th>
+                        <td id="experiment-m"></td>
+                    </tr>
+                    <tr>
+                        <th>K = </th>
+                        <td id="experiment-k"></td>
+                    </tr>
+                    <tr>
+                        <th>min deg = </th>
+                        <td id="experiment-deg_min"></td>
+                    </tr>
+                    <tr>
+                        <th>max deg = </th>
+                        <td id="experiment-deg_max"></td>
+                    <tr>
+                    </tr>
+                        <th>avg deg = </th>
+                        <td id="experiment-deg_avg"></td>
+                    </tr>
+                    <tr>
+                        <th>T2 = </th>
+                        <td id="experiment-t2"></td>
+                    </tr>
+                    <tr>
+                        <th>T3 = </th>
+                        <td id="experiment-t3"></td>
+                    </tr>
+                    <tr>
+                        <th>Greedy = </th>
+                        <td id="experiment-greedy"></td>
+                    </tr>
+                </table>
+                <strong>Comment:</strong>
+                <br>
+                <pre id="experiment-comment"></pre>
+            </div>
+            <div class="tab-pane" id="tab-meta">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <label for="experiment-meta-field" style="margin-top: 8px;">
+                            Field:
+                        </label>
+                    </div>
+                    <div class="col-xs-9">
+                        <select class="form-control" id="experiment-meta-field">
+                            <option value="iterations">Iterations</option>
+                            <option value="conflicts">Resolved conflicts</option>
+                            <option value="improvements">Improvements</option>
+                            <option value="resolve_ratio">Resolve ratio</option>
+                            <option value="minimums">Minimums</option>
+                            <option value="updates">Updates</option>
+                            <option value="aspirations">Aspirations</option>
+                            <option value="aspiration_ratio">Aspiration ratio</option>
+                            <option value="time">Time</option>
+                            <option value="k">Colors</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div id="experiment-meta"></div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="centered">
+    <h1>Graph coloring</h1>
+</div>
+<hr>
+<p>
+    <strong>Input:</strong>
+    An undirected graph G = (V, E) and a set of colors Γ.
+    <br>
+    <strong>Coloring:</strong>
+    mapping that assigns a unique color to each vertex.
+    A conflict in a given coloring is a pair of connected vertexes, which have the same color.
+    <br>
+    <strong>Searched:</strong>
+    a coloring that contains no conflicts with the minmum number of colors.
+    <br>
+    <strong>Note:</strong>
+    It is well known that the k-coloring problem for general graphs is NP-complete and that the chromatic
+    number problem is NP-hard.
+</p>
+<hr>
+<p>
+    In the table are shown the results of a collection of benchmark graphs taken from the <a href="http://dimacs.rutgers.edu/Challenges/" target="_blank">DIMACS competition</a>.
+</p>
+<table id="graphs" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover ">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Group</th>
+        <th>Name</th>
+        <th title="Number of nodes">N</th>
+        <th title="Number of edges">M</th>
+        <th title="Average degree">R</th>
+        <th title="Lower chromatic bound">X</th>
+        <th title="Guided local search">GLS</th>
+      </tr>
+    </thead>
+</table>

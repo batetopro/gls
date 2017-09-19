@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("CClass:Score","Score");NDSummary.OnSummaryLoaded("CClass:Score",[["C/C++","C"]],[["Groups","Group"],["Structs","Struct"],["Variables","Variable"]],[[17,0,1,"Score"],[37,0,0,"Variables","Variables"],[38,0,2,"conflicts","conflicts"],[39,0,2,"guidance","guidance"],[40,0,2,"total","total"]]);

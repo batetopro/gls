@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("m",["Variable"],[["M",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.M","CClass:GuidedLocalSearch:M"]]]]);

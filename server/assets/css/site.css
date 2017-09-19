@@ -1,0 +1,38 @@
+/*
+ * Start Bootstrap - Logo Nav (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+body {
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+}
+
+.navbar-fixed-top .nav {
+    padding: 15px 0;
+}
+
+.navbar-fixed-top .navbar-brand {
+    padding: 0 15px;
+}
+
+@media(min-width:768px) {
+    body {
+        padding-top: 100px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+    }
+
+    .navbar-fixed-top .navbar-brand {
+        padding: 15px 0;
+    }
+}
+
+.centered{text-align: center;}
+.align-right{text-align: right;}
+span{cursor: pointer;}
+
+.loader{display: block; width: 100%; text-align: center; margin-top: 150px;}
+.loader i{font-size: 50px;}
+.loader strong{display: block; text-align: center; margin-top: 30px;}
+.loader img{display: block; margin: 0 auto;}
+.link{text-decoration: underline; color: blue;}
+.link:hover{text-decoration: none; color: red;}

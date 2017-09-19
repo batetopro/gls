@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("asp",["Constant"],[["ASPIRATION",,[[,"uint ASPIRATION",,,0,"File:gls.h:uint_ASPIRATION"]]]]);

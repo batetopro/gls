@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cal",["Function"],[["calculate",,[["ColoringUpperBound",,,,0,"File:gls.h:ColoringUpperBound.calculate","CClass:ColoringUpperBound:calculate"]]]]);

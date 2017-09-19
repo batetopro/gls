@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("gui",["Variable","Class"],[["guidance",,[["Score",,,,0,"File:gls.h:Score.guidance","CClass:Score:guidance"]]],["GuidedLocalSearch",,[[,,,,1,"File:gls.h:GuidedLocalSearch","CClass:GuidedLocalSearch"]]]]);

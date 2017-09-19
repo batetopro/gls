@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("mak",["Function"],[["make_move",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.make_move","CClass:GuidedLocalSearch:make_move"]]]]);
