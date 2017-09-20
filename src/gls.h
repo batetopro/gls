@@ -273,6 +273,11 @@ namespace gls {
 		*/
 		uint created = 0;
 		
+		/* Field: created
+		Timestamp of the finishing moment of the report
+		*/
+		uint finished = 0;
+		
 		/* Field: iters
 		Iterations
 		*/
@@ -304,7 +309,7 @@ namespace gls {
 		void print(const color &k = 0){
 			std::cout << k << ",";
 			std::cout << iters << ",";
-			std::cout << std::time(nullptr) - created << ",";
+			std::cout << finished - created << ",";
 			std::cout << improvements << ",";
 			std::cout << mins << ",";
 			std::cout << updates << ",";
@@ -1023,7 +1028,6 @@ namespace gls {
 				#ifdef DEBUGGING
 				if(DEBUG){
 					epoche_report.iters++;
-					solution_report.iters++;
 				}
 				#endif
 				std::vector<Move> moves = best_neighbours(G, improvement, score, W > 0);
@@ -1031,7 +1035,6 @@ namespace gls {
 					resolution = SolveResolution::LocalMin;
 					#ifdef DEBUGGING
 					if(DEBUG){
-						solution_report.mins++;
 						epoche_report.mins++;
 					}
 					#endif
@@ -1057,7 +1060,6 @@ namespace gls {
 						solution_score = score;
 						#ifdef DEBUGGING
 						if(DEBUG){
-							solution_report.improvements++;
 							epoche_report.improvements++;
 							if(DEBUG & DEBUG_MOVES){
 								std::cout << "IMPROVE," << iters << "," << solution_score.conflicts << "," << solution_score.guidance << "," << solution_score.total << std::endl;
@@ -1077,7 +1079,6 @@ namespace gls {
 						if(DEBUG & DEBUG_MINIMUM){
 							std::cout << "MIN," << iters << std::endl;
 						}
-						solution_report.updates++;
 						epoche_report.updates++;
 					}
 					#endif
@@ -1114,13 +1115,20 @@ namespace gls {
 			#ifdef DEBUGGING
 			if(DEBUG & DEBUG_EPOCHE){
 				epoche_report.end = solution_score;
+				epoche_report.finished = std::time(nullptr);
 				epoche_report.print(K);
 			}
 			
 			if(DEBUG & DEBUG_SOLUTION){
-				solution_report.end.conflicts += solution_score.conflicts;
-				solution_report.end.guidance += solution_score.guidance;
-				solution_report.end.total += solution_score.total;
+				if(resolution == SolveResolution::Solved){
+					solution_report.end.conflicts = 0;
+					solution_report.end.guidance = 0;
+					solution_report.end.total = 0;
+					solution_report.finished = std::time(nullptr);
+					solution_report.iters += epoche_report.iters;
+					solution_report.mins += epoche_report.mins;
+					solution_report.updates += epoche_report.updates;
+				}
 			}
 			#endif
 			
