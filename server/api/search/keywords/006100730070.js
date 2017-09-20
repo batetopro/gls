@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("asp",["Constant"],[["ASPIRATION",,[[,"uint ASPIRATION",,,0,"File:gls.h:uint_ASPIRATION"]]]]);
+NDSearch.OnPrefixDataLoaded("asp",["Constant","Variable"],[["ASPIRATION",,[[,"uint ASPIRATION",,,0,"File:gls.h:uint_ASPIRATION"]]],["aspirations",,[["SolveReport",,,,1,"File:gls.h:SolveReport.aspirations","CClass:SolveReport:aspirations"]]]]);

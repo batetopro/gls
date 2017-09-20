@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("tot",["Variable"],[["total",,[["Move",,,,0,"File:gls.h:Move.total","CClass:Move:total"],["Score",,,,0,"File:gls.h:Score.total","CClass:Score:total"]]]]);
+NDSearch.OnPrefixDataLoaded("tot",["Variable"],[["total",,[["Score",,,,0,"File:gls.h:Score.total","CClass:Score:total"]]]]);

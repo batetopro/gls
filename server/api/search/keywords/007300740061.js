@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("sta",["Variable"],[["start",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.start","CClass:GuidedLocalSearch:start"]]]]);
+NDSearch.OnPrefixDataLoaded("sta",["Variable","Constant"],[["start",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.start","CClass:GuidedLocalSearch:start"],["SolveReport",,,,0,"File:gls.h:SolveReport.start","CClass:SolveReport:start"]]],["status",,[[,"Node status",,,1,"File:gls.h:Node_status"]]]]);

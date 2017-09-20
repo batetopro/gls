@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("min",["Constant"],[["Minimal",,[[,,,,0,"File:gls.h:Minimal"]]]]);
+NDSearch.OnPrefixDataLoaded("min",["Constant","Variable"],[["Minimal",,[[,,,,0,"File:gls.h:Minimal"]]],["mins",,[["SolveReport",,,,1,"File:gls.h:SolveReport.mins","CClass:SolveReport:mins"]]]]);

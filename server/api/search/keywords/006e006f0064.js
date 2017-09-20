@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("nod",["Variable"],[["node",,[["Move",,,,0,"File:gls.h:Move.node","CClass:Move:node"]]]]);
+NDSearch.OnPrefixDataLoaded("nod",["Variable","Constant"],[["Node",,[["Move","node",,,0,"File:gls.h:Move.node","CClass:Move:node"],[,"Node status",,,1,"File:gls.h:Node_status"]]],["NODE_ALLOWED",,[[,"uint NODE_ALLOWED",,,1,"File:gls.h:uint_NODE_ALLOWED"]]],["NODE_MARKED",,[[,"uint NODE_MARKED",,,1,"File:gls.h:uint_NODE_MARKED"]]]]);
