@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("end",["Variable"],[["end",,[["SolveReport",,,,0,"File:gls.h:SolveReport.end","CClass:SolveReport:end"]]]]);

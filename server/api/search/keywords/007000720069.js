@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("pri",["Function"],[["print",,[["SolveReport",,,,0,"File:gls.h:SolveReport.print","CClass:SolveReport:print"]]]]);

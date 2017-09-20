@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("dyn",["Constant"],[["DYNAMIC_LAMBDA",,[[,"uint DYNAMIC_LAMBDA",,,0,"File:gls.h:uint_DYNAMIC_LAMBDA"]]]]);

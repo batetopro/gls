@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({10:"<div class=\"NDToolTip TType LC\"><div class=\"TTSummary\">Alias for a int, representing a color.</div></div>",17:"<div class=\"NDToolTip TStruct LC\"><div class=\"TTSummary\">GLS score of a coloring in a given moment.</div></div>"});

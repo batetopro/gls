@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cle",["Function"],[["clear_fast_search",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.clear_fast_search","CClass:GuidedLocalSearch:clear_fast_search"]]],["clear_weights",,[["GuidedLocalSearch",,,,0,"File:gls.h:GuidedLocalSearch.clear_weights","CClass:GuidedLocalSearch:clear_weights"]]]]);

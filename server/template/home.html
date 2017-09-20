@@ -192,7 +192,7 @@ var G = {
             var name = names[i];
             var path = "/api/moves/" + g.source + "/" + g.graph + "/" + bs + "/" + name;
             view += '<div class="col-md-6">';
-            view += '<img style="width: 100%;" src="'+path+'">';
+            view += '<a href="'+path+'" target="_blank"><img style="width: 100%;" src="'+path+'"></a>';
             view += '</div>';
         }
         $("#experiment-moves").html(view);
@@ -204,7 +204,7 @@ var G = {
             var sw = SW[i];
             var path = "/api/meta/" + g.source + "/" + g.graph + "/" + sw + "/" + field;
             view += '<div class="col-md-6">';
-            view += '<img style="width: 100%;" src="'+path+'">';
+            view += '<a href="'+path+'" target="_blank"><img style="width: 100%;" src="'+path+'"></a>';
             view += '</div>';
         }
         $("#experiment-meta").html(view);
@@ -416,9 +416,6 @@ $(function(){
 .well{text-align: center;}
 </style>
 
-
-
-
 <div class="modal fade" id="visualization">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -553,8 +550,11 @@ $(function(){
                     <div id="experiment-moves" class="row">
 
                     </div>
-
-                    TODO: Legend
+                    <hr>
+                    <strong>Legend:</strong>
+                    <div class="centered">
+                        <img src="/assets/img/moves_legend.png" />
+                    </div>
                 </div>
             </div>
             <div class="tab-pane" id="tab-strategy">
@@ -610,9 +610,12 @@ $(function(){
                         </div>
                     </div>
                     <hr>
-                    <div id="experiment-meta"></div>
-
-                    TODO: Legend
+                    <div id="experiment-meta" class="row"></div>
+                    <hr/>
+                    <strong>Legend:</strong>
+                    <div class="centered">
+                        <img src="/assets/img/performance_legend.png" />
+                    </div>
                 </div>
             </div>
         </div>

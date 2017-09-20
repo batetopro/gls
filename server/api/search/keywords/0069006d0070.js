@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("imp",["Variable"],[["improvements",,[["SolveReport",,,,0,"File:gls.h:SolveReport.improvements","CClass:SolveReport:improvements"]]]]);
