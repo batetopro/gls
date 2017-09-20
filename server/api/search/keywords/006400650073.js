@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("des",["Constant"],[["DESTIANTION_TARGET",,[[,"EpocheTarget DESTIANTION_TARGET",,,0,"File:gls.h:EpocheTarget_DESTIANTION_TARGET"]]]]);
+NDSearch.OnPrefixDataLoaded("des",["Constant"],[["DESTINATION_TARGET",,[[,"EpocheTarget DESTINATION_TARGET",,,0,"File:gls.h:EpocheTarget_DESTINATION_TARGET"]]]]);

@@ -114,7 +114,7 @@ namespace gls {
 	BuildStrategy BUILD_STRATEGY 			- How to build initail graph coloring. Default: *Greedy*
 	EpocheStrategy UPDATE_STRATEGY      	- How to update the coloring between the epoches. Default: *Мерге*
 	EpocheTarget SOURCE_TARGET				- Source color of the merges. Default: *Минимум*
-	EpocheTarget DESTIANTION_TARGET  		- Destination color of the merges. Default: *Маьимум*
+	EpocheTarget DESTINATION_TARGET  		- Destination color of the merges. Default: *Маьимум*
 	ColoringUpperBoundMethod UPPER_BOUND   	- How to calcilate the upper bound of the coloring. Default: *Тхереом 2*
 	uint RESET_WEIGHTS 					  	- Should the weights be zeros between the epoches. Default: *Yes*
 	uint LOWER_BOUND 					  	- A given lower bound of the chromatic number. Default: *2*
@@ -129,7 +129,7 @@ namespace gls {
 	BuildStrategy BUILD_STRATEGY = BuildStrategy::Greedy; 
 	EpocheStrategy UPDATE_STRATEGY = EpocheStrategy::Merge;
 	EpocheTarget SOURCE_TARGET = EpocheTarget::Minimal;
-	EpocheTarget DESTIANTION_TARGET = EpocheTarget::Maximal;
+	EpocheTarget DESTINATION_TARGET = EpocheTarget::Maximal;
 	ColoringUpperBoundMethod UPPER_BOUND = ColoringUpperBoundMethod::Theorem2;
 	uint RESET_WEIGHTS = 1;
 	uint LOWER_BOUND = 2;
@@ -184,7 +184,7 @@ namespace gls {
 		BUILD_STRATEGY = static_cast<BuildStrategy>(atoi(ini.GetValue("gls", "BUILD_STRATEGY", "1")));
 		UPDATE_STRATEGY = static_cast<EpocheStrategy>(atoi(ini.GetValue("gls", "UPDATE_STRATEGY", "1")));
 		SOURCE_TARGET = static_cast<EpocheTarget>(atoi(ini.GetValue("gls", "SOURCE_TARGET", "1")));
-		DESTIANTION_TARGET = static_cast<EpocheTarget>(atoi(ini.GetValue("gls", "DESTIANTION_TARGET", "2")));
+		DESTINATION_TARGET = static_cast<EpocheTarget>(atoi(ini.GetValue("gls", "DESTINATION_TARGET", "2")));
 		UPPER_BOUND = static_cast<ColoringUpperBoundMethod>(atoi(ini.GetValue("gls", "UPPER_BOUND", "1")));
 		RESET_WEIGHTS = atoi(ini.GetValue("gls", "RESET_WEIGHTS", "1"));
 		DYNAMIC_LAMBDA = atoi(ini.GetValue("gls", "DYNAMIC_LAMBDA", "0"));
@@ -1222,7 +1222,7 @@ namespace gls {
 			}
 	
 			colors result = colors();
-			if(DESTIANTION_TARGET == EpocheTarget::Random){
+			if(DESTINATION_TARGET == EpocheTarget::Random){
 				for(color c: coloring){
 					while(c == src){ c  = rand() % k; }
 					if(c > src){c--;}
@@ -1230,7 +1230,7 @@ namespace gls {
 				}
 			} else {
 				color dest;
-				switch(DESTIANTION_TARGET){
+				switch(DESTINATION_TARGET){
 					case EpocheTarget::Minimal:
 						dest = (SOURCE_TARGET == EpocheTarget::Minimal) ? sorted[k-2] : sorted[k-1];
 						break;
@@ -1309,7 +1309,7 @@ namespace gls {
 			
 			#ifdef DEBUGGING
 			if(DEBUG & DEBUG_SOLUTION){
-				solver.solution_report.print(k);
+				solver.solution_report.print(get_colors(result));
 			}
 			#endif
 			
