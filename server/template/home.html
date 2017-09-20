@@ -118,7 +118,6 @@ var G = {
         return result;
     },
     graph_details: function(g){
-
         $("#graph-n").text(g.n);
         $("#graph-m").text(g.m);
         $("#graph-k").text(g.gls + " / " + g.x);
@@ -131,6 +130,13 @@ var G = {
         $("#graph-t3").text(g.t3);
         $("#graph-greedy").text(g.greedy);
         $("#graph-comment").text(g.comment);
+
+
+        if(g.experiment){
+            G.graph_experiments(g);
+        }else{
+            G.hide_experiments();
+        }
 
         $("#mynetwork").html('<div class="loader"><i class="fa fa-cog fa-spin fa-3x fa-fw"></i><strong>Loading</strong></div>');
         $("#visualization").modal("show");
@@ -147,6 +153,36 @@ var G = {
             } else {
                 G.draw();
             }
+        });
+    },
+    hide_experiments: function(){
+        $("#no-moves").show();
+        $("#no-strategy").show();
+        $("#no-meta").show();
+        $("#has-moves").hide();
+        $("#has-strategy").hide();
+        $("#has-meta").hide();
+    },
+    graph_experiments(g){
+        $("#no-moves").hide();
+        $("#no-strategy").hide();
+        $("#no-meta").hide();
+
+        $("#has-moves").show();
+        $("#has-strategy").show();
+        $("#has-meta").show();
+
+
+        G.graph_moves(g, $("#experiment-moves-init").val());
+        $("#experiment-moves-init").change(function(){
+            G.graph_moves(g, $("#experiment-moves-init").val());
+        });
+
+        G.graph_strategy(g);
+
+        G.graph_meta(g, $("#experiment-meta-field").val());
+        $("#experiment-meta-field").change(function(){
+            G.graph_meta(g, $("#experiment-meta-field").val());
         });
     },
     graph_moves: function(g, bs){
@@ -229,34 +265,6 @@ var G = {
             );
         });
     },
-    graph_experiments(g){
-        $("#experiment-n").text(g.n);
-        $("#experiment-m").text(g.m);
-        $("#experiment-k").text(g.gls + " / " + g.x);
-        $("#experiment-deg_min").text(g.deg_min);
-        $("#experiment-deg_max").text(g.deg_max);
-        $("#experiment-deg_avg").text(g.deg_avg);
-        $("#experiment-name").text(g.graph);
-        $("#experiment-source").text(g.source);
-        $("#experiment-t2").text(g.t2);
-        $("#experiment-t3").text(g.t3);
-        $("#experiment-greedy").text(g.greedy);
-        $("#experiment-comment").text(g.comment);
-
-        G.graph_moves(g, $("#experiment-moves-init").val());
-        $("#experiment-moves-init").change(function(){
-            G.graph_moves(g, $("#experiment-moves-init").val());
-        });
-
-        G.graph_strategy(g);
-
-        G.graph_meta(g, $("#experiment-meta-field").val());
-        $("#experiment-meta-field").change(function(){
-            G.graph_meta(g, $("#experiment-meta-field").val());
-        });
-
-        $("#experiments").modal("show");
-    },
     init: function(){
         $.getJSON("/api/graphs", {}, function(resp){
             G.graphs = [];
@@ -313,9 +321,6 @@ var G = {
 
                             $(td).find(".link").on("click", function(){
                                 G.graph_details(graph);
-                            });
-                            $(td).find(".experiment").on("click", function(){
-                                G.graph_experiments(graph);
                             });
                         }
                         //className: 'centered',
@@ -399,9 +404,16 @@ $(function(){
     margin-left: 12px;
 }
 
+#tab-preview .question{
+    margin-left: 0;
+    margin-right: 12px;
+}
+
 .experiment{
     margin-right: 8px;
 }
+
+.well{text-align: center;}
 </style>
 
 
@@ -430,38 +442,74 @@ $(function(){
                 <a href="#tab-preview" data-toggle="tab">Preview</a>
             </li>
             <li class="">
-                <a href="#tab-editor" data-toggle="tab">Editor</a>
+                <a href="#tab-editor" data-toggle="tab">Coloring</a>
+            </li>
+            <li>
+                <a href="#tab-moves" data-toggle="tab">Moves</a>
+            </li>
+            <li>
+                <a href="#tab-strategy" data-toggle="tab">Strategy</a>
+            </li>
+            <li>
+                <a href="#tab-meta" data-toggle="tab">Performance</a>
             </li>
           </ul>
+          <hr>
           <div class="tab-content">
             <div class="tab-pane active" id="tab-preview">
                 <div id="mynetwork"></div>
                 <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
                     <tr>
-                        <th>N = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Number of nodes" aria-hidden="true"></i>
+                            N =
+                        </th>
                         <td id="graph-n"></td>
-                        <th>M = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Number of edges" aria-hidden="true"></i>
+                            M =
+                        </th>
                         <td id="graph-m"></td>
-                        <th>K = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Lower bound / used colors" aria-hidden="true"></i>
+                            K =
+                        </th>
                         <td id="graph-k"></td>
                     </tr>
                     <tr>
-                        <th>min deg = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Minimum node degree" aria-hidden="true"></i>
+                            min deg =
+                        </th>
                         <td id="graph-deg_min"></td>
-                        <th>max deg = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Maximum node degree" aria-hidden="true"></i>
+                            max deg =
+                        </th>
                         <td id="graph-deg_max"></td>
-                        <th>avg deg = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Average node degree" aria-hidden="true"></i>
+                            avg deg =
+                        </th>
                         <td id="graph-deg_avg"></td>
                     </tr>
                     <tr>
-                        <th>T2 = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Estimation using theorem 2" aria-hidden="true"></i>
+                            T2 =
+                        </th>
                         <td id="graph-t2"></td>
-                        <th>T3 = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Estimation using theorem 3" aria-hidden="true"></i>
+                            T3 =
+                        </th>
                         <td id="graph-t3"></td>
-                        <th>Greedy = </th>
+                        <th>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Estimation using greedy coloring" aria-hidden="true"></i>
+                            Greedy =
+                        </th>
                         <td id="graph-greedy"></td>
                     </tr>
-
                 </table>
                 <strong>Comment:</strong>
                 <br>
@@ -479,154 +527,93 @@ $(function(){
 3 1 2 3 4 5 6
 </textarea>
             </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="modal fade" id="experiments">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Experiments</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
-              <tr>
-                <th>Name:</th>
-                <td id="experiment-name"></td>
-                <th>Source:</th>
-                <td id="experiment-source"></td>
-              </tr>
-          </table>
-          <ul class="nav nav-pills">
-            <li class="active">
-                <a href="#tab-moves" data-toggle="tab">Moves</a>
-            </li>
-            <li>
-                <a href="#tab-strategy" data-toggle="tab">Strategy</a>
-            </li>
-            <li>
-                <a href="#tab-meta" data-toggle="tab">Meta</a>
-            </li>
-            <li>
-                <a href="#tab-stats" data-toggle="tab">Stats</a>
-            </li>
-          </ul>
-          <hr>
-          <div class="tab-content">
-            <div class="tab-pane active" id="tab-moves">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <label for="experiment-moves-init" style="margin-top: 8px;">
-                            Initialization:
-                        </label>
-                    </div>
-                    <div class="col-xs-9">
-                        <select class="form-control" id="experiment-moves-init">
-                            <option value="1">Greedy</option>
-                            <option value="2">Bipartite</option>
-                            <option value="0">Random</option>
-                        </select>
-                    </div>
+            <div class="tab-pane" id="tab-moves">
+                <div id="no-moves" class="well">
+                    No experiment results for this graph.
                 </div>
-                <hr>
-                <div id="experiment-moves" class="row">
+                <div id="has-moves">
+                    <div class="well">
+                        Iterations of GLS during the epochs.
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <label for="experiment-moves-init" style="margin-top: 8px;">
+                                Initialization:
+                            </label>
+                        </div>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="experiment-moves-init">
+                                <option value="1">Greedy</option>
+                                <option value="2">Bipartite</option>
+                                <option value="0">Random</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="experiment-moves" class="row">
 
+                    </div>
+
+                    TODO: Legend
                 </div>
             </div>
             <div class="tab-pane" id="tab-strategy">
-                <table id="table-strategy" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover">
-                    <thead class="thead-inverse">
-                      <tr>
-                        <th>Epochs</th>
-                        <th>Source</th>
-                        <th>Dest.</th>
-                        <th>K</th>
-                        <th>Time</th>
-                        <th>Iter.</th>
-                        <th>Impr.</th>
-                      </tr>
-                    </thead>
-                </table>
-            </div>
-            <div class="tab-pane" id="tab-stats">
-                <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
-                    <tr>
-                        <th>N = </th>
-                        <td id="experiment-n"></td>
-                    <tr>
-                    </tr>
-                        <th>M = </th>
-                        <td id="experiment-m"></td>
-                    </tr>
-                    <tr>
-                        <th>K = </th>
-                        <td id="experiment-k"></td>
-                    </tr>
-                    <tr>
-                        <th>min deg = </th>
-                        <td id="experiment-deg_min"></td>
-                    </tr>
-                    <tr>
-                        <th>max deg = </th>
-                        <td id="experiment-deg_max"></td>
-                    <tr>
-                    </tr>
-                        <th>avg deg = </th>
-                        <td id="experiment-deg_avg"></td>
-                    </tr>
-                    <tr>
-                        <th>T2 = </th>
-                        <td id="experiment-t2"></td>
-                    </tr>
-                    <tr>
-                        <th>T3 = </th>
-                        <td id="experiment-t3"></td>
-                    </tr>
-                    <tr>
-                        <th>Greedy = </th>
-                        <td id="experiment-greedy"></td>
-                    </tr>
-                </table>
-                <strong>Comment:</strong>
-                <br>
-                <pre id="experiment-comment"></pre>
+                <div id="no-strategy" class="well">
+                    No experiment results for this graph.
+                </div>
+                <div id="has-strategy">
+                    <div class="well">
+                        How different source and target colors affected the GLS.
+                    </div>
+                    <table id="table-strategy" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover">
+                        <thead class="thead-inverse">
+                          <tr>
+                            <th>Epochs</th>
+                            <th>Source</th>
+                            <th>Dest.</th>
+                            <th>K</th>
+                            <th>Time</th>
+                            <th>Iter.</th>
+                            <th>Impr.</th>
+                          </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
             <div class="tab-pane" id="tab-meta">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <label for="experiment-meta-field" style="margin-top: 8px;">
-                            Field:
-                        </label>
-                    </div>
-                    <div class="col-xs-9">
-                        <select class="form-control" id="experiment-meta-field">
-                            <option value="iterations">Iterations</option>
-                            <option value="conflicts">Resolved conflicts</option>
-                            <option value="improvements">Improvements</option>
-                            <option value="resolve_ratio">Resolve ratio</option>
-                            <option value="minimums">Minimums</option>
-                            <option value="updates">Updates</option>
-                            <option value="aspirations">Aspirations</option>
-                            <option value="aspiration_ratio">Aspiration ratio</option>
-                            <option value="time">Time</option>
-                            <option value="k">Colors</option>
-                        </select>
-                    </div>
+                <div id="no-meta" class="well">
+                    No experiment results for this graph.
                 </div>
-                <hr>
-                <div id="experiment-meta"></div>
+                <div id="has-meta">
+                    <div class="well">
+                        How different heuristics affected separate GLS performance fields.
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <label for="experiment-meta-field" style="margin-top: 8px;">
+                                Field:
+                            </label>
+                        </div>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="experiment-meta-field">
+                                <option value="iterations">Iterations</option>
+                                <option value="conflicts">Resolved conflicts</option>
+                                <option value="improvements">Improvements</option>
+                                <option value="resolve_ratio">Resolve ratio</option>
+                                <option value="minimums">Minimums</option>
+                                <option value="updates">Updates</option>
+                                <option value="aspirations">Aspirations</option>
+                                <option value="aspiration_ratio">Aspiration ratio</option>
+                                <option value="time">Time</option>
+                                <option value="k">Colors</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="experiment-meta"></div>
+
+                    TODO: Legend
+                </div>
             </div>
         </div>
       </div>
@@ -636,9 +623,6 @@ $(function(){
     </div>
   </div>
 </div>
-
-
-
 
 <div class="centered">
     <h1>Graph coloring</h1>
@@ -663,6 +647,7 @@ $(function(){
 <p>
     In the table are shown the results of a collection of benchmark graphs taken from the <a href="http://dimacs.rutgers.edu/Challenges/" target="_blank">DIMACS competition</a>.
 </p>
+
 <table id="graphs" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover ">
     <thead class="thead-inverse">
       <tr>
@@ -676,3 +661,11 @@ $(function(){
       </tr>
     </thead>
 </table>
+
+<hr>
+
+<p>
+    This sign <i class="fa fa-flask" aria-hidden="true"></i> means that the experiments were done with this graph.
+    <br>
+    Click on the graph name to see details: experiment results and coloring visualization.
+</p>
