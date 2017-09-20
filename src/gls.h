@@ -1,6 +1,15 @@
-//#define DEBUGGING 1
-//#include "SimpleIni.h"
-//#define CONFIG "gls.ini"
+// Turn on debugging
+#define DEBUGGING 1
+
+// Turn on fast search heuristic
+// #define FAST_SEARCH_ENABLE 1
+
+// Turn on dynammic lambda heuristic
+#define DYNAMIC_LAMBDA_ENABLE 1
+
+// Use .ini file configuration
+#include "../lib/SimpleIni.h"
+#define CONFIG "gls.ini"
 
 #include <algorithm>
 #include <vector>
@@ -112,6 +121,7 @@ namespace gls {
 	uint MAX_ITER 					  		- Maximum number of iterations. Default: *1000000000*
 	uint MAX_NO_IMPROVE 					- Maximum number of not improving movements before a weights update. Default: *5*
 	uint LAMBDA 					  		- Coefficient for combining the conflicts and guidance scores. Default: *10*
+	uint DYNAMIC_LAMBDA 					- Sets lambda dynamiclly to the average conflicts decrease before guidance is used.
 	uint ASPIRATION 						- Enables the aspiration moves. Default: *Yes*
 	uint TIMEOUT 							- Maximum execution time of GLS in seconds. Default: *120*
 	uint DEBUG 								- Bitwise AND mask of debug levels. Default: *0*
@@ -123,9 +133,10 @@ namespace gls {
 	ColoringUpperBoundMethod UPPER_BOUND = ColoringUpperBoundMethod::Theorem2;
 	uint RESET_WEIGHTS = 1;
 	uint LOWER_BOUND = 2;
-	uint MAX_ITER = 1000000000;
+	uint MAX_ITER = 0;
 	uint MAX_NO_IMPROVE = 5;
 	uint LAMBDA = 10;
+	uint DYNAMIC_LAMBDA = 1;
 	uint ASPIRATION = 1;
 	uint FAST_SEARCH = 1;
 	uint TIMEOUT = 120;
@@ -176,17 +187,25 @@ namespace gls {
 		DESTIANTION_TARGET = static_cast<EpocheTarget>(atoi(ini.GetValue("gls", "DESTIANTION_TARGET", "2")));
 		UPPER_BOUND = static_cast<ColoringUpperBoundMethod>(atoi(ini.GetValue("gls", "UPPER_BOUND", "1")));
 		RESET_WEIGHTS = atoi(ini.GetValue("gls", "RESET_WEIGHTS", "1"));
+		DYNAMIC_LAMBDA = atoi(ini.GetValue("gls", "DYNAMIC_LAMBDA", "0"));
 		LOWER_BOUND = atoi(ini.GetValue("gls", "LOWER_BOUND", "2"));
-		MAX_ITER = atoi(ini.GetValue("gls", "MAX_ITER", "1000000000"));
+		MAX_ITER = atoi(ini.GetValue("gls", "MAX_ITER", "0"));
 		MAX_NO_IMPROVE = atoi(ini.GetValue("gls", "MAX_NO_IMPROVE", "5"));
 		LAMBDA = atoi(ini.GetValue("gls", "LAMBDA", "10"));
 		FAST_SEARCH = atoi(ini.GetValue("gls", "FAST_SEARCH", "1"));
 		ASPIRATION = atoi(ini.GetValue("gls", "ASPIRATION", "1"));
 		TIMEOUT = atoi(ini.GetValue("gls", "TIMEOUT", "120"));
 		DEBUG = atoi(ini.GetValue("gls", "DEBUG", "0"));
-		
 		if(BUILD_STRATEGY != BuildStrategy::RandomStart && UPDATE_STRATEGY == EpocheStrategy::Scratch){
 			std::cout << "Scratch is supported only for random start" << std::endl; 
+			exit(1);
+		}
+		#endif
+		
+		
+		#ifdef DYNAMIC_LAMBDA_ENABLE
+		if(DYNAMIC_LAMBDA > 0 && RESET_WEIGHTS == 0){
+			std::cout << "Dynamic lambda and penalty keeping can not be applied together" << std::endl; 
 			exit(1);
 		}
 		#endif
@@ -197,31 +216,6 @@ namespace gls {
 	 * Structures
 	 * ==========
 	 */
-	/* Struct: Move
-	GLS iteration move
-	*/
-	struct Move{
-		/* Field: node
-		Which node to update.
-		*/
-		NodeID node;
-		/* Field: to
-		In which color to make the node.
-		*/
-		color to;
-		/* Field: total
-		Augumented score of the resulting coloring.
-		*/
-		uint total;
-		/* Field: delta_conflicts
-		What is the chnage of the conflicts by applying the move.
-		*/
-		int delta_conflicts;
-		/* Field: delta_guidance
-		What is the chnage of the guidance by applying the move.
-		*/
-		int delta_guidance;
-	};
 	
 	/* Struct: Score
 	GLS score of a coloring in a given moment.
@@ -239,6 +233,24 @@ namespace gls {
 		Total score of the coloring. For implementation reasons it is equal to 10*conflicts + LAMBDA * guidance.
 		*/
 		uint total = 0;
+	};
+	
+	/* Struct: Move
+	GLS iteration move
+	*/
+	struct Move{
+		/* Field: node
+		Which node to update.
+		*/
+		NodeID node;
+		/* Field: to
+		In which color to make the node.
+		*/
+		color to;
+		/* Field: score
+		Score of the move
+		*/
+		Score score;
 	};
 	
 	#ifdef DEBUGGING
@@ -349,7 +361,7 @@ namespace gls {
 		
 		/*
 		Method: theorem2
-		ApplyTheorem 2 in the referenced work.
+		Apply Theorem 2 in the referenced work.
 		*/
 		static uint theorem2(const graph_access &G){
 			upairs degrees = get_degrees(G);
@@ -366,44 +378,45 @@ namespace gls {
 		
 		/*
 		Method: theorem3
-		ApplyTheorem 3 in the referenced work.
+		Apply Theorem 3 in the referenced work.
 		*/
 		static uint theorem3(const graph_access &G){
-				upairs degrees = get_degrees(G);
-				upairs rhos = upairs();
-				
-				uint N = G.number_of_nodes();
-				uint until, rho;
-				
-				for(NodeID v = 0; v < N; ++v){
-					upairs tab = upairs();
-					for(NodeID u: G.neighbours(v)){
-						tab.push_back(degrees[u]);
-					}
-					
-					std::sort(tab.begin(), tab.end(), upair_comparator);
-					
-					rho = 0;
-					until = tab.size();
-					
-					for(NodeID j = 0; j < until; ++j){
-						if(tab[j].second > rho){ rho++; } 
-						else { break; }
-					}
-					
-					rhos.push_back(std::make_pair(v, rho));
+			upairs degrees = get_degrees(G);
+			upairs rhos = upairs();
+			
+			uint N = G.number_of_nodes();
+			uint until, rho;
+			
+			for(NodeID v = 0; v < N; ++v){
+				upairs tab = upairs();
+				for(NodeID u: G.neighbours(v)){
+					tab.push_back(degrees[u]);
 				}
 				
-				std::sort(rhos.begin(), rhos.end(), upair_comparator);
+				std::sort(tab.begin(), tab.end(), upair_comparator);
 				
-				uint result = 0; 
-				for(upair d: rhos){
-					if(d.second >= result){ result++; } 
+				rho = 0;
+				until = tab.size();
+				
+				for(NodeID j = 0; j < until; ++j){
+					if(tab[j].second > rho){ rho++; } 
 					else { break; }
 				}
 				
-				return (result > 0) ? result : 1;
+				rhos.push_back(std::make_pair(v, rho));
 			}
+			
+			std::sort(rhos.begin(), rhos.end(), upair_comparator);
+			
+			uint result = 0; 
+			for(upair d: rhos){
+				if(d.second >= result){ result++; } 
+				else { break; }
+			}
+			
+			return (result > 0) ? result : 1;
+		}
+		
 		/*
 		Method: calculate
 		Interface to combine the methods and the configuration field UPPER_BOUMD
@@ -618,35 +631,10 @@ namespace gls {
 		uint* conflicts;
 		
 		/*
-		 Field: weights
-		 Array with the current weights of the edges
+		 Method: update_conflicts
+		 Updates the conflicts structure according to a given coloring
 		 */
-		uint* weights;
-		
-		/*
-		 Field: W
-		 Sum of the weights
-		*/
-		uint W = 0;
-		
-		/*
-		 Field: indicators
-		 Array, that if has value 1, shows that an edge is connecting two nodes with the same color in the solution. It has value 0 otherwise. 
-		*/
-		uint* indicators; 
-		
-		/*
-		 Field: fast_search
-		 Array, used for fast search, filled with node status values.
-		*/
-		uint* fast_search; 
-		
-		/*
-		 Method: init_conflicts
-		 Initialize the conflicts
-		 */
-		void init_conflicts(const graph_access &G, const colors &coloring){
-			conflicts = new uint[K * N];
+		void update_conflicts(const graph_access &G, const colors &coloring){
 			for(NodeID v = 0; v < N; ++v) {
 				for(uint i = 0; i < K; ++i){
 					conflicts[K*v + i] = 0;
@@ -658,41 +646,19 @@ namespace gls {
 		}
 		
 		/*
-		 Method: init_indicators
-		 Initialize the indicators array with zeros
-		*/
-		void init_indicators(){
-			indicators = new uint[M];
-			for(NodeID v = 0; v < M; v++){
-				indicators[v] = 0;
-			}
-		}
+		 Field: weights
+		 Array with the current weights of the edges
+		 */
+		uint* weights;
 		
 		/*
-		 Method: update_indicators
-		 Fills the indicators array with the corresponding node conflicts.
+		 Method: clear_weights
+		 Sets the guidance weights to zeros.
 		*/
-		void update_indicators(const graph_access &G, const colors &coloring){
-			for(NodeID v = 0; v < N; ++v){
-				EdgeID until = G.get_first_invalid_edge(v);
-				for(EdgeID e = G.get_first_edge(v); e < until; ++e){
-					NodeID u = G.getEdgeTarget(e);
-					indicators[e] = (coloring[u] == coloring[v]) ? 1 : 0;
-				}
-			}
-		}
-		
-		/*
-		 Method: init_fast_search
-		 Initialize the fast search with zeros
-		*/
-		void init_fast_search(){
-			fast_search = new uint[N * K];
-			for(NodeID v = 0; v < N; v++){
-				for(color c = 0; c < K; c++){
-					fast_search[K*v + c] = NODE_ALLOWED;
-				}
-			}
+		void clear_weights(){
+			W = 0;
+			solution_score.guidance = 0;
+			for(uint i = 0; i < M; ++i){ weights[i] = 0; }
 		}
 		
 		/*
@@ -726,94 +692,50 @@ namespace gls {
 		}
 		
 		/*
-		 Method: init
-		 Prepares the GLS solver for a new epoche.
+		 Field: W
+		 Sum of the weights
 		*/
-		void init(const graph_access &G, const colors &coloring){
-			iters = 0;
-			N = G.number_of_nodes();
-			M = G.number_of_edges();
-			solution = coloring;
-			
-			init_conflicts(G, coloring);
-			if(W == 0){		
-				init_weights();
-				init_indicators();
-			}
-			
-			init_fast_search();
-			
-			update_indicators(G, solution);
-			solution_score = build_score(score_conflicts(solution), score_guidance());
-			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_EPOCHE){
-				epoche_report.created = std::time(nullptr);
-				epoche_report.start = solution_score;
-				epoche_report.improvements = 0;
-				epoche_report.aspirations = 0;
-				epoche_report.updates = 0;
-				epoche_report.mins = 0;
-				epoche_report.iters = 0;
-			}
-			
-			if(DEBUG & DEBUG_SOLUTION){
-				if(solution_report.iters == 0){
-					solution_report.created = std::time(nullptr);
+		uint W = 0;
+		
+		/*
+		 Field: indicators
+		 Array, that if has value 1, shows that an edge is connecting two nodes with the same color in the solution. It has value 0 otherwise. 
+		*/
+		uint* indicators; 
+		
+		/*
+		 Method: update_indicators
+		 Fills the indicators array with the corresponding node conflicts.
+		*/
+		void update_indicators(const graph_access &G, const colors &coloring){
+			for(NodeID v = 0; v < N; ++v){
+				EdgeID until = G.get_first_invalid_edge(v);
+				for(EdgeID e = G.get_first_edge(v); e < until; ++e){
+					NodeID u = G.getEdgeTarget(e);
+					indicators[e] = (coloring[u] == coloring[v]) ? 1 : 0;
 				}
-				solution_report.start.conflicts += solution_score.conflicts;
-				solution_report.start.guidance += solution_score.guidance;
-				solution_report.start.total += solution_score.total;
 			}
-			#endif
 		}
 		
-		public:
-		
-		
-		#ifdef DEBUGGING
+		#ifdef FAST_SEARCH_ENABLE
 		/*
-		 Field: epoche_report
-		 Struct for reporting the epoche.
+		 Field: fast_search
+		 Array, used for fast search, filled with node status values.
 		*/
-		SolveReport epoche_report;
+		uint* fast_search; 
 		
 		/*
-		 Field: epoche_report
-		 Struct for reporting the solution.
+		 Method: clear_fast_search
+		 Initialize the fast search with zeros
 		*/
-		SolveReport solution_report;
+		void clear_fast_search(){
+			for(NodeID v = 0; v < N; v++){
+				for(color c = 0; c < K; c++){
+					fast_search[K*v + c] = NODE_ALLOWED;
+				}
+			}
+		}
 		#endif
-		
-		/*
-		 Method: GuidedLocalSearch
-		 Constructs a new solver, by setting the timer for the timeout.
-		*/
-		GuidedLocalSearch(){
-			start = std::time(nullptr);
-		}
-		
-		/*
-		 Method: ~GuidedLocalSearch
-		 Destructs a solver, by freeing the memory for the internal arrays.
-		*/
-		~GuidedLocalSearch(){
-			delete [] conflicts;
-			delete [] weights;
-			delete [] indicators;
-			delete [] fast_search;
-		}
-		
-		/*
-		 Method: init_weights
-		 Sets the edge weights of the solver and the responding fields to zeros.
-		*/
-		void init_weights(){
-			W = 0;
-			solution_score.guidance = 0;
-			weights = new uint[M];
-			for(uint i = 0; i < M; ++i){ weights[i] = 0; }
-		}
 		
 		/*
 		 Method: build_score
@@ -825,16 +747,6 @@ namespace gls {
 			result.guidance = guidance;
 			result.total = (W) ? 10 * conflicts + LAMBDA * guidance : 10 * conflicts;
 			return result;
-		}
-
-		/*
-		 Method: increment_score
-		 Applies increments of the conflicts and guidance, then combines them in the total score.
-		*/
-		inline void increment_score(Score &score, const int delta_conflicts, const int delta_guidance){
-			score.conflicts += delta_conflicts;
-			score.guidance += delta_guidance;
-			score.total =  (W) ? 10 * score.conflicts + LAMBDA * score.guidance : 10 * score.conflicts;
 		}
 		
 		/*
@@ -865,111 +777,44 @@ namespace gls {
 		}
 		
 		/*
-		 Method: solve
-		 Applies the GLS strategy to solve the k-coloring problem for an initial coloring of a graph G. 
+		 Method: make_move
+		 Applies the next move to a given colring of the graph G with known score.
+		 
+		 Additionally, it applies the move to the conflicts array.
 		*/
-		colors solve(const graph_access &G, const colors &coloring, const uint k){
-			K = k;
-			init(G, coloring);
-			
-			uint no_improve = 0;
-			colors improvement = solution;
-			Score score = solution_score;
-			SolveResolution resolution = SolveResolution::NotFound;
-			
-			while(resolution == SolveResolution::NotFound){
-				while(resolution == SolveResolution::NotFound){
-					
-					if(solution_score.conflicts == 0){
-						resolution = SolveResolution::Solved;
-						break;
-					}
-					
-					iters++;
-					#ifdef DEBUGGING
-					if(DEBUG){
-						epoche_report.iters++;
-						solution_report.iters++;
-					}
-					#endif
-					std::vector<Move> moves = best_neighbours(G, improvement, score, W > 0);
-					if(moves.size() == 0){
-						resolution = SolveResolution::LocalMin;
-						#ifdef DEBUGGING
-						if(DEBUG){
-							solution_report.mins++;
-							epoche_report.mins++;
-						}
-						#endif
-					} else {
-						Move next = moves[rand() % moves.size()];
-						no_improve = (score.total == next.total) ? no_improve + 1 : 0;
-						
-						make_move(G, improvement, score, next);
-						
-						if(no_improve == MAX_NO_IMPROVE){
-							resolution = SolveResolution::NoImprove;
-						}
-						
-						if(score.conflicts < solution_score.conflicts){
-							solution = improvement;
-							solution_score = score;
-							#ifdef DEBUGGING
-							if(DEBUG){
-								solution_report.improvements++;
-								epoche_report.improvements++;
-								if(DEBUG & DEBUG_MOVES){
-									std::cout << "IMPROVE," << iters << "," << solution_score.conflicts << "," << solution_score.guidance << "," << solution_score.total << "," << std::endl;
-								}
-							}
-							#endif
-						}
-					}
-					
-					if(iters > MAX_ITER){
-						resolution = SolveResolution::MaxIterations;
-					}
-					
-					if(resolution == SolveResolution::NoImprove || resolution == SolveResolution::LocalMin){
-						#ifdef DEBUGGING
-						if(DEBUG){
-							if(DEBUG & DEBUG_MINIMUM){
-								std::cout << "MIN," << iters << std::endl;
-							}
-							solution_report.updates++;
-							epoche_report.updates++;
-						}
-						#endif
-						
-						update_weights(G, improvement);
-						score = build_score(score.conflicts, score_guidance());
-						no_improve = 0;
-						
-						if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
-							resolution = SolveResolution::Timeout;
-						} else {
-							resolution = SolveResolution::NotFound;
-						}
+		void make_move(const graph_access &G, colors &coloring, Score &score, Move next){
+			uint old = coloring[next.node];
+			for (NodeID u : G.neighbours(next.node)) {
+				conflicts[K*u + old]--;
+				conflicts[K*u + next.to]++;
+				#ifdef FAST_SEARCH_ENABLE
+				if(FAST_SEARCH){
+					for(color c=0;c<K;c++){
+						fast_search[K * u + c] = NODE_ALLOWED;
 					}
 				}
+				#endif
 			}
 			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_EPOCHE){
-				epoche_report.end = solution_score;
-				epoche_report.print(K);
-			}
-			
-			if(DEBUG & DEBUG_SOLUTION){
-				solution_report.end.conflicts += solution_score.conflicts;
-				solution_report.end.guidance += solution_score.guidance;
-				solution_report.end.total += solution_score.total;
+			#ifdef FAST_SEARCH_ENABLE
+			if(FAST_SEARCH){
+				fast_search[K * next.node + coloring[next.node]] = NODE_MARKED;
 			}
 			#endif
 			
-			return solution;
+			score.conflicts = next.score.conflicts;
+			score.guidance = next.score.guidance;
+			score.total = next.score.total;
+			
+			coloring[next.node] = next.to;
+			
+			#ifdef DEBUGGING
+			if(DEBUG & DEBUG_MOVES){
+				std::cout << "MOVE," << iters << "," << next.node << "," << next.to << "," << score.conflicts << "," << score.guidance << "," << score.total << std::endl;
+			}
+			#endif
 		}
-
+		
 		/*
 		 Method: best_neighbours
 		 Searches the neighbourhood of a given coloring of graph G with known score.
@@ -990,10 +835,11 @@ namespace gls {
 				}
 				
 				for(uint c = 0; c < K; c++){
+					#ifdef FAST_SEARCH_ENABLE
 					if(FAST_SEARCH && fast_search[K*v + c] != NODE_ALLOWED){
 						continue;
 					}
-					
+					#endif
 					if(c == coloring[v]){
 						continue;
 					}
@@ -1029,9 +875,7 @@ namespace gls {
 						Move next;
 						next.node = v;
 						next.to = c;
-						next.total = eval.total;
-						next.delta_conflicts = eval.conflicts - score.conflicts;
-						next.delta_guidance = eval.guidance - score.guidance;
+						next.score = eval;
 						result.push_back(next);
 					}
 					
@@ -1045,9 +889,7 @@ namespace gls {
 							Move next;
 							next.node = v;
 							next.to = c;
-							next.total = eval.total;
-							next.delta_conflicts = eval.conflicts - score.conflicts;
-							next.delta_guidance = eval.guidance - score.guidance;
+							next.score = eval;
 							aspired.push_back(next);
 						}
 					}
@@ -1067,37 +909,222 @@ namespace gls {
 			return result;
 		}
 		
+		public:
+		#ifdef DEBUGGING
 		/*
-		 Method: make_move
-		 Applies the next move to a given colring of the graph G with known score.
-		 
-		 Additionally, it applies the move to the conflicts array.
+		 Field: epoche_report
+		 Struct for reporting the epoche.
 		*/
-		void make_move(const graph_access &G, colors &coloring, Score &score, Move next){
-			uint old = coloring[next.node];
-			for (NodeID u : G.neighbours(next.node)) {
-				conflicts[K*u + old]--;
-				conflicts[K*u + next.to]++;
+		SolveReport epoche_report;
+		
+		/*
+		 Field: solution_report
+		 Struct for reporting the solution.
+		*/
+		SolveReport solution_report;
+		#endif
+		
+		
+		/*
+		 Method: GuidedLocalSearch
+		 Constructs a new solver, by setting the timer for the timeout.
+		*/
+		GuidedLocalSearch(){
+			start = std::time(nullptr);
+		}
+		
+		/*
+		 Method: ~GuidedLocalSearch
+		 Destructs a solver, by freeing the memory for the internal arrays.
+		*/
+		~GuidedLocalSearch(){
+			delete [] conflicts;
+			delete [] weights;
+			delete [] indicators;
+			#ifdef FAST_SEARCH_ENABLE
+			delete [] fast_search;
+			#endif
+		}
+		
+		void prepare(const graph_access &G, const colors &coloring, const uint &k){
+			N = G.number_of_nodes();
+			M = G.number_of_edges();
+			K = k;
+			
+			conflicts = new uint[K * N];
+			indicators = new uint[M];
+			#ifdef FAST_SEARCH_ENABLE
+			fast_search = new uint[K * N];
+			#endif
+			weights = new uint[M];
+			clear_weights();
+		}
+		
+		/*
+		 Method: solve
+		 Applies the GLS strategy to solve the k-coloring problem for an initial coloring of a graph G. 
+		*/
+		colors solve(const graph_access &G, const colors &coloring, const uint k){
+			K = k;
+			if(DEBUG & DEBUG_MOVES){
+				std::cout << "START," << iters << "," << k << std::endl;
+			}
+			
+			if(RESET_WEIGHTS){ 
+				clear_weights(); 
+			}
+			
+			update_conflicts(G, coloring);
+			update_indicators(G, coloring);
+			
+			#ifdef FAST_SEARCH_ENABLE
+			clear_fast_search();
+			#endif
+			
+			solution = coloring;
+			solution_score = build_score(score_conflicts(solution), score_guidance());
+			
+			uint first_update_total = 0;
+			uint first_update_iters = 0;
+			
+			uint no_improve = 0;
+			colors improvement = solution;
+			Score score = solution_score;
+			SolveResolution resolution = SolveResolution::NotFound;
+			
+			#ifdef DEBUGGING
+			if(DEBUG & DEBUG_EPOCHE){
+				epoche_report.created = std::time(nullptr);
+				epoche_report.start = solution_score;
+				epoche_report.improvements = 0;
+				epoche_report.aspirations = 0;
+				epoche_report.updates = 0;
+				epoche_report.mins = 0;
+				epoche_report.iters = 0;
+			}
+			
+			if(DEBUG & DEBUG_SOLUTION){
+				if(solution_report.iters == 0){
+					solution_report.created = std::time(nullptr);
+				}
+				solution_report.start.conflicts += solution_score.conflicts;
+				solution_report.start.guidance += solution_score.guidance;
+				solution_report.start.total += solution_score.total;
+			}
+			#endif
+			
+			while(resolution == SolveResolution::NotFound){
+				if(solution_score.conflicts == 0){
+					resolution = SolveResolution::Solved;
+					break;
+				}
 				
-				if(FAST_SEARCH){
-					for(color c=0;c<K;c++){
-						fast_search[K * u + c] = NODE_ALLOWED;
+				iters++;
+				#ifdef DEBUGGING
+				if(DEBUG){
+					epoche_report.iters++;
+					solution_report.iters++;
+				}
+				#endif
+				std::vector<Move> moves = best_neighbours(G, improvement, score, W > 0);
+				if(moves.size() == 0){
+					resolution = SolveResolution::LocalMin;
+					#ifdef DEBUGGING
+					if(DEBUG){
+						solution_report.mins++;
+						epoche_report.mins++;
+					}
+					#endif
+				} else {
+					Move next = moves[rand() % moves.size()];
+					no_improve = (score.total == next.score.total) ? no_improve + 1 : 0;
+					
+					#ifdef DYNAMIC_LAMBDA_ENABLE
+						if(DYNAMIC_LAMBDA && W == 0){
+							first_update_iters++;
+							first_update_total += score.total - next.score.total;
+						}
+					#endif
+					
+					make_move(G, improvement, score, next);
+					
+					if(no_improve == MAX_NO_IMPROVE){
+						resolution = SolveResolution::NoImprove;
+					}
+					
+					if(score.conflicts < solution_score.conflicts){
+						solution = improvement;
+						solution_score = score;
+						#ifdef DEBUGGING
+						if(DEBUG){
+							solution_report.improvements++;
+							epoche_report.improvements++;
+							if(DEBUG & DEBUG_MOVES){
+								std::cout << "IMPROVE," << iters << "," << solution_score.conflicts << "," << solution_score.guidance << "," << solution_score.total << std::endl;
+							}
+						}
+						#endif
+					}
+				}
+				
+				if(MAX_ITER && iters > MAX_ITER){
+					resolution = SolveResolution::MaxIterations;
+				}
+				
+				if(resolution == SolveResolution::NoImprove || resolution == SolveResolution::LocalMin){
+					#ifdef DEBUGGING
+					if(DEBUG){
+						if(DEBUG & DEBUG_MINIMUM){
+							std::cout << "MIN," << iters << std::endl;
+						}
+						solution_report.updates++;
+						epoche_report.updates++;
+					}
+					#endif
+					
+					#ifdef DYNAMIC_LAMBDA_ENABLE
+						if(DYNAMIC_LAMBDA > 0 && W == 0){
+							if(first_update_iters){
+								LAMBDA = (DYNAMIC_LAMBDA * first_update_total) / first_update_iters;
+								if (LAMBDA == 0){ LAMBDA = 10; }
+							} else {
+								LAMBDA = 10;
+							}
+						}
+					#endif
+					
+					update_weights(G, improvement);
+					score = build_score(score.conflicts, score_guidance());
+					no_improve = 0;
+					resolution = SolveResolution::NotFound;
+					
+					if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
+						resolution = SolveResolution::Timeout;
+					}
+				}
+				
+				
+				if(iters % 100 == 0){
+					if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
+						resolution = SolveResolution::Timeout;
 					}
 				}
 			}
 			
-			if(FAST_SEARCH){
-				fast_search[K * next.node + coloring[next.node]] = NODE_MARKED;
+			#ifdef DEBUGGING
+			if(DEBUG & DEBUG_EPOCHE){
+				epoche_report.end = solution_score;
+				epoche_report.print(K);
 			}
 			
-			increment_score(score, next.delta_conflicts, next.delta_guidance);
-			coloring[next.node] = next.to;
-			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_MOVES){
-				std::cout << "MOVE," << iters << "," << next.node << "," << next.to << "," << score.conflicts << "," << score.guidance << "," << score.total << std::endl;
+			if(DEBUG & DEBUG_SOLUTION){
+				solution_report.end.conflicts += solution_score.conflicts;
+				solution_report.end.guidance += solution_score.guidance;
+				solution_report.end.total += solution_score.total;
 			}
 			#endif
+			
+			return solution;
 		}
 	};
 
@@ -1137,18 +1164,6 @@ namespace gls {
 			}
 			
 			return result;
-		}
-		
-		/*
-		 Method: get_colors
-		 Finds the biggest number in a coloring.
-		*/
-		inline color get_colors(const colors &coloring){
-			color k = 0;
-			for (color c: coloring){
-				if(k < c){ k = c; }
-			}
-			return ++k;
 		}
 		
 		/*
@@ -1241,6 +1256,18 @@ namespace gls {
 		}
 		
 	public:
+		/*
+		 Method: get_colors
+		 Finds the biggest number in a coloring.
+		*/
+		inline static color get_colors(const colors &coloring){
+			color k = 0;
+			for (color c: coloring){
+				if(k < c){ k = c; }
+			}
+			return ++k;
+		}
+		
 	    /*
 		 Method: solve
 		 Applies the GLS strategy iteratively, trying yo minimize the number of the colors in a given coloring of the graph G.
@@ -1258,14 +1285,19 @@ namespace gls {
 			colors result = coloring;
 			colors filtered = result; 
 			
+			if(K < get_colors(coloring)){
+				K = get_colors(coloring);
+			}
+			
+			if(LOWER_BOUND == 2){LOWER_BOUND++;}
+			
 			GuidedLocalSearch solver = GuidedLocalSearch();
+			solver.prepare(G, coloring, K);
 			
 			color k;
-			for (k = K; k > LOWER_BOUND; k--){
-				if(RESET_WEIGHTS){ 
-					solver.init_weights(); 
-				}
+			for (k = K; k >= LOWER_BOUND; k--){
 				colors solution = solver.solve(G, filtered, k);
+				
 				if(evaluate(G, solution) == 0){
 					result = solution;
 				} else {
@@ -1277,21 +1309,25 @@ namespace gls {
 			
 			#ifdef DEBUGGING
 			if(DEBUG & DEBUG_SOLUTION){
-				solver.solution_report.print(k+1);
-			}
-			
-			if (DEBUG & DEBUG_OUTPUT){
-				NodeID N = G.number_of_nodes();
-				std::cout << N << " " << G.number_of_edges() << std::endl;
-				for(NodeID v = 0; v < N; v++){
-					std::cout << result[v] << " ";
-					for(NodeID u: G.neighbours(v)){
-						std::cout << u << " ";
-					}
-					std::cout << std::endl;
-				}				
+				solver.solution_report.print(k);
 			}
 			#endif
+			
+			if (DEBUG & DEBUG_OUTPUT){
+				if(evaluate(G, result) == 0){
+					NodeID N = G.number_of_nodes();
+					std::cout << N << " " << G.number_of_edges() << std::endl;
+					for(NodeID v = 0; v < N; v++){
+						std::cout << result[v] << " ";
+						for(NodeID u: G.neighbours(v)){
+							std::cout << u + 1 << " ";
+						}
+						std::cout << std::endl;
+					}					
+				} else {
+					std::cout << "NO" << std::endl;
+				}
+			}
 			
 			return result;
 		}
