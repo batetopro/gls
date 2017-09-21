@@ -904,7 +904,6 @@ namespace gls {
 			if(aspired.size() > 0){
 				#ifdef DEBUGGING
 				if(DEBUG){
-					solution_report.aspirations++;
 					epoche_report.aspirations++;
 				}
 				#endif
@@ -1019,11 +1018,6 @@ namespace gls {
 			#endif
 			
 			while(resolution == SolveResolution::NotFound){
-				if(solution_score.conflicts == 0){
-					resolution = SolveResolution::Solved;
-					break;
-				}
-				
 				iters++;
 				#ifdef DEBUGGING
 				if(DEBUG){
@@ -1110,6 +1104,11 @@ namespace gls {
 						resolution = SolveResolution::Timeout;
 					}
 				}
+				
+				if(solution_score.conflicts == 0){
+					resolution = SolveResolution::Solved;
+					solution = improvement;
+				}
 			}
 			
 			#ifdef DEBUGGING
@@ -1128,9 +1127,14 @@ namespace gls {
 					solution_report.iters += epoche_report.iters;
 					solution_report.mins += epoche_report.mins;
 					solution_report.updates += epoche_report.updates;
+					solution_report.aspirations += epoche_report.aspirations;
 				}
 			}
 			#endif
+			
+			if(solution_report.finished == 0){
+				solution_report.finished = std::time(nullptr);
+			}
 			
 			return solution;
 		}
@@ -1343,7 +1347,7 @@ namespace gls {
 }
 
 /*
-// If the coloring is with unsigned ints
+// If the coloring is with signed ints
 std::vector<int> GuidedLocalSearch(const std::vector<int> &s, const graph_access &G){
 	gls::EpocheRunner solver = gls::EpocheRunner();
 	gls::colors coloring;
