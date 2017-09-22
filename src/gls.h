@@ -1024,6 +1024,13 @@ namespace gls {
 					epoche_report.iters++;
 				}
 				#endif
+				
+				if(solution_score.conflicts == 0){
+					resolution = SolveResolution::Solved;
+					solution = improvement;
+					break;
+				}
+				
 				std::vector<Move> moves = best_neighbours(G, improvement, score, W > 0);
 				if(moves.size() == 0){
 					resolution = SolveResolution::LocalMin;
@@ -1128,13 +1135,14 @@ namespace gls {
 					solution_report.mins += epoche_report.mins;
 					solution_report.updates += epoche_report.updates;
 					solution_report.aspirations += epoche_report.aspirations;
+					solution_report.improvements += epoche_report.improvements;
+				} else {
+					solution_report.end.conflicts = score.conflicts;
+					solution_report.end.guidance = score.guidance;
+					solution_report.end.total = score.total;
 				}
 			}
 			#endif
-			
-			if(solution_report.finished == 0){
-				solution_report.finished = std::time(nullptr);
-			}
 			
 			return solution;
 		}
@@ -1208,6 +1216,10 @@ namespace gls {
 		 Otherwise the coloring will be truncated.
 		*/
 		colors filter(const graph_access &G, const colors &coloring, color k){
+			if(get_colors(coloring) <= k - 1 && evaluate(G, coloring) == 0){
+				return coloring;
+			}
+			
 			if(UPDATE_STRATEGY == EpocheStrategy::Scratch){
 				return ColoringBuilder::random(G, k-1);
 			}
