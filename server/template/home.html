@@ -109,13 +109,28 @@ var G = {
                 if(h >= parts.length){
                     entry[header[h]] = "";
                 } else {
-                    entry[header[h]] = parts[h];
+                    var f = parseFloat(parts[h]);
+                    if(isNaN(f)){
+                        entry[header[h]] = parts[h];
+                    } else {
+                        entry[header[h]] = f.toFixed(2);
+                    }
                 }
             }
 
             result.push(entry);
         }
         return result;
+    },
+    group_details: function(g){
+        $("#group-name").text(g.name);
+        $("#group-author").text(g.author);
+        $("#group-email").text(g.mail);
+        $("#group-comment").text(g.comment);
+
+        G.show_strategy("/group/strategy/" + g.name, '#table-group-strategy');
+
+        $("#group").modal("show");
     },
     graph_details: function(g){
         $("#graph-n").text(g.n);
@@ -178,7 +193,7 @@ var G = {
             G.graph_moves(g, $("#experiment-moves-init").val());
         });
 
-        G.graph_strategy(g);
+        G.show_strategy("/api/strategy/" + g.source + "/" + g.graph, '#table-strategy');
 
         G.graph_meta(g, $("#experiment-meta-field").val());
         $("#experiment-meta-field").change(function(){
@@ -209,11 +224,10 @@ var G = {
         }
         $("#experiment-meta").html(view);
     },
-    graph_strategy: function(g){
-        var path = "/api/strategy/" + g.source + "/" + g.graph;
-        $.get(path, {}, function(resp){
+    show_strategy: function(path, target){
+         $.get(path, {}, function(resp){
             var data = G.parse_csv(resp);
-            $('#table-strategy').dataTable({
+            $(target).dataTable({
                 data: data,
                 deferRender: true,
                 destroy: true,
@@ -258,7 +272,20 @@ var G = {
                         searchable: false,
                         sortable: true,
                         className: 'align-right',
-                        width: 20
+                        width: 20,
+                        createdCell: function (td, cellData, group, row, col) {
+                            console.log($(td).parent());
+
+                            if(group.final_conflicts > 0){
+                                $(td).parent().addClass("danger");
+                            } else {
+                                $(td).parent().addClass("info");
+                            }
+
+
+                            var val = (group.conflicts / group.iterations).toFixed(2);
+                            $(td).html('<span title="Ratio = '+val+'">'+group.improvements+'</span>');
+                        }
                     }
                   ]
                 }
@@ -292,19 +319,16 @@ var G = {
                         data: "source",
                         searchable: true,
                         sortable: true,
-                        //className: 'centered',
+                        className: 'centered',
                         width: 20,
                         createdCell: function (td, cellData, graph, row, col) {
-                            var g = G.groups[graph.source];
-                            var content = "";
-                            content += "<strong>Author: </strong>" + g.author + "<br>";
-                            content += "<strong>Email: </strong>" + g.mail + "<br>";
-                            content += "<strong>Comment: </strong>" + g.comment.replace(new RegExp("\n", 'g'), '<br>');
-
-                            var view = graph.source;
-                            view += '<i class="fa fa-question-circle question" data-toggle="popover" title="'+graph.source+'" aria-hidden="true" data-content="'+content+'"></i>';
+                            var view = "";
+                            view += '<span class="link">' + graph.source + '</span>';
                             $(td).html(view);
-                            $(td).find("i").popover({trigger: "hover", html: true});
+                            $(td).find(".link").on("click", function(){
+                                G.groups[graph.source].name = graph.source;
+                                G.group_details(G.groups[graph.source]);
+                            });
                         }
                     },{
                         data: "graph",
@@ -378,6 +402,10 @@ $(function(){
 });
 </script>
 <style>
+pre{
+    white-space:pre-wrap;
+}
+
 .title{
     margin: 0;
     text-align: center;
@@ -468,7 +496,7 @@ $(function(){
                         </th>
                         <td id="graph-m"></td>
                         <th>
-                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Lower bound / used colors" aria-hidden="true"></i>
+                            <i class="fa fa-question-circle question" data-toggle="toolbar" title="Used colors / lower bound" aria-hidden="true"></i>
                             K =
                         </th>
                         <td id="graph-k"></td>
@@ -579,6 +607,10 @@ $(function(){
                         </thead>
                     </table>
                 </div>
+                <hr>
+                Note: The experiment ends until lower bound is met or timeout of 10 seconds exceeds.
+                <br>
+                Note: Experiment is for clean GLS with lambda = 1 and sw = 2.
             </div>
             <div class="tab-pane" id="tab-meta">
                 <div id="no-meta" class="well">
@@ -626,6 +658,119 @@ $(function(){
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="group">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Source</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+              <tr>
+                <th>Name:</th>
+                <td id="group-name"></td>
+              </tr>
+          </table>
+          <ul class="nav nav-pills">
+            <li class="active">
+                <a href="#tab-group-preview" data-toggle="tab">Preview</a>
+            </li>
+            <li>
+                <a href="#tab-group-strategy" data-toggle="tab">Strategy</a>
+            </li>
+            <li>
+                <a href="#tab-group-meta" data-toggle="tab">Performance</a>
+            </li>
+          </ul>
+          <hr>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-group-preview">
+                <table cellspacing="0" width="100%" class="table table-sm table-striped table-bordered">
+                    <tr>
+                        <th>
+                            Author
+                        </th>
+                        <td id="group-author"></td>
+                        <th>
+                            E-mail
+                        </th>
+                        <td id="group-email"></td>
+                    </tr>
+                </table>
+                <strong>Comment:</strong>
+                <br>
+                <pre id="group-comment"></pre>
+            </div>
+            <div class="tab-pane" id="tab-group-strategy">
+                <div class="well">
+                    How different source and target colors affected the GLS.
+                </div>
+                <table id="table-group-strategy" cellspacing="0" width="100%" class="table table-sm table-striped table-bordered table-hover">
+                    <thead class="thead-inverse">
+                      <tr>
+                        <th>Epochs</th>
+                        <th>Source</th>
+                        <th>Dest.</th>
+                        <th>K</th>
+                        <th>Time</th>
+                        <th>Iter.</th>
+                        <th>Impr.</th>
+                      </tr>
+                    </thead>
+                </table>
+
+                <hr>
+                Note: The experiment ends until lower bound is met or timeout of 10 seconds exceeds.
+                <br>
+                Note: Experiment is for clean GLS with lambda = 1 and sw = 2.
+            </div>
+            <div class="tab-pane" id="tab-group-meta">
+                <div class="well">
+                    How different heuristics affected separate GLS performance fields.
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        <label for="experiment-meta-field" style="margin-top: 8px;">
+                            Field:
+                        </label>
+                    </div>
+                    <div class="col-xs-9">
+                    <select class="form-control" id="group-meta-field">
+                        <option value="iterations">Iterations</option>
+                        <option value="conflicts">Resolved conflicts</option>
+                            <option value="improvements">Improvements</option>
+                            <option value="resolve_ratio">Resolve ratio</option>
+                            <option value="minimums">Minimums</option>
+                            <option value="updates">Updates</option>
+                            <option value="aspirations">Aspirations</option>
+                            <option value="aspiration_ratio">Aspiration ratio</option>
+                            <option value="time">Time</option>
+                            <option value="k">Colors</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <div id="group-meta" class="row"></div>
+                <hr/>
+                <strong>Legend:</strong>
+                <div class="centered">
+                    <img src="/assets/img/performance_legend.png" />
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="centered">
     <h1>Graph coloring</h1>

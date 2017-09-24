@@ -101,6 +101,16 @@ class StrategyHandler(FileHandler):
         return self.send(path)
 
 
+class GroupStrategyHandler(FileHandler):
+    def run(self, *args, **kwargs):
+        if len(args) < 1:
+            return 1
+
+        path = os.path.join(exp, args[0], "strategies.csv")
+        print(path)
+        return self.send(path)
+
+
 class MovesHandler(FileHandler):
     def run(self, *args, **kwargs):
         if len(args) < 4:
@@ -158,6 +168,7 @@ def make_app():
         (r"/api/moves/(.*)/(.*)/(.*)/(.*)", MovesHandler),
         (r"/api/meta/(.*)/(.*)/(.*)/(.*)", MetaHandler),
         (r"/api/strategy/(.*)/(.*)", StrategyHandler),
+        (r"/group/strategy/(.*)", GroupStrategyHandler),
         (r"/api/(.*)", tornado.web.StaticFileHandler, {'path': api}),
         (r"/assets/(.*)", tornado.web.StaticFileHandler, {'path': assets}),
 
