@@ -109,7 +109,6 @@ namespace gls {
 	 * =============
 	 */
 	
-	bool _inited = false;
 	/* Constants: Configuration fields
 	BuildStrategy BUILD_STRATEGY 			- How to build initail graph coloring. Default: *Greedy*
 	EpocheStrategy UPDATE_STRATEGY      	- How to update the coloring between the epoches. Default: *Мерге*
@@ -172,10 +171,7 @@ namespace gls {
 	/* Function: init
 	Initialize the solver by reading the .ini config file.
 	*/
-	void init(){
-		if(_inited){return;}
-		_inited = true;
-		
+	void init(){	
 		#ifdef CONFIG
 		CSimpleIniA ini;
 		ini.SetUnicode();
@@ -1086,7 +1082,7 @@ namespace gls {
 					#ifdef DYNAMIC_LAMBDA_ENABLE
 						if(DYNAMIC_LAMBDA > 0 && W == 0){
 							if(first_update_iters){
-								LAMBDA = (DYNAMIC_LAMBDA * first_update_total) / first_update_iters;
+								LAMBDA = first_update_total / first_update_iters;
 								if (LAMBDA == 0){ LAMBDA = 10; }
 							} else {
 								LAMBDA = 10;
@@ -1098,17 +1094,11 @@ namespace gls {
 					score = build_score(score.conflicts, score_guidance());
 					no_improve = 0;
 					resolution = SolveResolution::NotFound;
-					
-					if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
-						resolution = SolveResolution::Timeout;
-					}
 				}
 				
 				
-				if(iters % 100 == 0){
-					if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
-						resolution = SolveResolution::Timeout;
-					}
+				if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
+					resolution = SolveResolution::Timeout;
 				}
 				
 				if(solution_score.conflicts == 0){
