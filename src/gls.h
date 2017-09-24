@@ -119,7 +119,7 @@ namespace gls {
 	uint RESET_WEIGHTS 					  	- Should the weights be zeros between the epoches. Default: *Yes*
 	uint LOWER_BOUND 					  	- A given lower bound of the chromatic number. Default: *2*
 	uint MAX_ITER 					  		- Maximum number of iterations. Default: *1000000000*
-	uint MAX_NO_IMPROVE 					- Maximum number of not improving movements before a weights update. Default: *5*
+	uint MAX_NO_IMPROVE 					- Maximum number of not improving movements before a weights update. Default: *2*
 	uint LAMBDA 					  		- Coefficient for combining the conflicts and guidance scores. Default: *10*
 	uint DYNAMIC_LAMBDA 					- Sets lambda dynamiclly to the average conflicts decrease before guidance is used.
 	uint ASPIRATION 						- Enables the aspiration moves. Default: *Yes*
@@ -134,7 +134,7 @@ namespace gls {
 	uint RESET_WEIGHTS = 1;
 	uint LOWER_BOUND = 2;
 	uint MAX_ITER = 0;
-	uint MAX_NO_IMPROVE = 5;
+	uint MAX_NO_IMPROVE = 2;
 	uint LAMBDA = 10;
 	uint DYNAMIC_LAMBDA = 1;
 	uint ASPIRATION = 1;
@@ -201,7 +201,6 @@ namespace gls {
 			exit(1);
 		}
 		#endif
-		
 		
 		#ifdef DYNAMIC_LAMBDA_ENABLE
 		if(DYNAMIC_LAMBDA > 0 && RESET_WEIGHTS == 0){
@@ -1306,17 +1305,23 @@ namespace gls {
 			
 			ColoringUpperBound bound = ColoringUpperBound();
 			color K = bound.calculate(G);
-			colors result = coloring;
-			colors filtered = result; 
-			
 			if(K < get_colors(coloring)){
 				K = get_colors(coloring);
 			}
 			
 			if(LOWER_BOUND == 2){LOWER_BOUND++;}
 			
+			// If the given coloring contains has a color bigger than the upper bound, set it to zero.
+			// This is the case random coloring with 10000 the biggest color and K = 10
+			colors result = colors();
+			for(color c: coloring){
+				if (c >= K){ result.push_back(0); }
+				else{ result.push_back(c); }
+			}
+			colors filtered = result; 
+			
 			GuidedLocalSearch solver = GuidedLocalSearch();
-			solver.prepare(G, coloring, K);
+			solver.prepare(G, filtered, K);
 			
 			color k;
 			for (k = K; k >= LOWER_BOUND; k--){
