@@ -7,6 +7,9 @@
 // Turn on dynammic lambda heuristic
 #define DYNAMIC_LAMBDA_ENABLE 1
 
+// Turn on moves queue 
+#define MOVE_QUEUE_ENABLE 1
+
 // Use .ini file configuration
 #include "../lib/SimpleIni.h"
 #define CONFIG "gls.ini"
@@ -249,6 +252,26 @@ namespace gls {
 	};
 	
 	#ifdef DEBUGGING
+	
+	class Debugger{
+	public:
+		static void print_coloring(const colors &coloring){
+			for(color c: coloring){
+				std::cout << c << " ";
+			}
+			std::cout << std::endl;
+		}
+		
+		static void print_conflicts(uint* &data, const uint &N, const uint &K){
+			for(uint v = 0 ; v < N; v++){
+				for(uint c = 0; c < K ;c++){
+					std::cout << data[K*v + c] << " ";
+				}
+				std::cout << std::endl;
+			}
+		}
+	};
+	
 	/* Struct: SolveReport
 	Report of GLS performance
 	*/
@@ -644,6 +667,29 @@ namespace gls {
 				}
 			}
 		}
+				
+		/*
+		 Field: guidance
+		 Array with the guidance with size K * N
+		 */
+		uint* guidance;
+		
+		/*
+		 Method: update_guidance
+		 Updates the guidance structure according to a given coloring
+		 */
+		void update_guidance(const graph_access &G, const colors &coloring){
+			for(NodeID v = 0; v < N; ++v) {
+				for(uint c = 0; c < K; ++c){
+					guidance[K*v + c] = 0;
+				}
+				EdgeID until = G.get_first_invalid_edge(v);
+				for(EdgeID e = G.get_first_edge(v); e < until; e++){
+					NodeID u = G.getEdgeTarget(e);
+					guidance[K*v + coloring[u]] += weights[e];
+				}
+			}
+		}
 		
 		/*
 		 Field: weights
@@ -665,29 +711,36 @@ namespace gls {
 		 Method: update_weights
 		 Calculates the utilites of the edges and then increment the value of the weights with 1 for edges having maximal utility.
 		*/
+		
 		void update_weights(const graph_access &G, const colors &coloring){
-			update_indicators(G, coloring);
-			
-			std::vector<EdgeID> updates = std::vector<EdgeID>();
+			std::vector<std::pair<NodeID, EdgeID>> updates = std::vector<std::pair<NodeID, EdgeID>>();
 			
 			float max = 0, utility = 0;
-			for(EdgeID e = 0; e < M; ++e){
-				utility = float(indicators[e]) / float(1 + weights[e]);
-				
-				if(utility > max){
-					max = utility;
-					updates = std::vector<EdgeID>();
-				}
-				
-				if(utility == max){
-					updates.push_back(e);
+			for(NodeID v = 0; v < N; ++v) {
+				EdgeID until = G.get_first_invalid_edge(v);
+				for(EdgeID e = G.get_first_edge(v); e < until; ++e){
+					NodeID u = G.getEdgeTarget(e);
+					if(coloring[v] != coloring[u]){ continue; }
+					
+					utility = 1.0 / float(1 + weights[e]);
+					if(utility > max){
+						max = utility;
+						updates = std::vector<std::pair<NodeID, EdgeID>>();
+					}
+					
+					if(utility == max){						
+						std::pair<NodeID, EdgeID> update = std::make_pair(v, e);
+						updates.push_back(update);
+					}
 				}
 			}
 			
-			for(EdgeID e: updates){
-				weights[e]++;
+			for(std::pair<NodeID, EdgeID> update: updates){
+				//std::cout << p.first << " " << G.getEdgeTarget(p.second) << std::endl;
+				guidance[K * update.first + coloring[G.getEdgeTarget(update.second)]]++;
+				weights[update.second]++;
 			}
-			
+			//std::cout << "--------------" << std::endl;
 			W += updates.size() / 2;
 		}
 		
@@ -696,26 +749,6 @@ namespace gls {
 		 Sum of the weights
 		*/
 		uint W = 0;
-		
-		/*
-		 Field: indicators
-		 Array, that if has value 1, shows that an edge is connecting two nodes with the same color in the solution. It has value 0 otherwise. 
-		*/
-		uint* indicators; 
-		
-		/*
-		 Method: update_indicators
-		 Fills the indicators array with the corresponding node conflicts.
-		*/
-		void update_indicators(const graph_access &G, const colors &coloring){
-			for(NodeID v = 0; v < N; ++v){
-				EdgeID until = G.get_first_invalid_edge(v);
-				for(EdgeID e = G.get_first_edge(v); e < until; ++e){
-					NodeID u = G.getEdgeTarget(e);
-					indicators[e] = (coloring[u] == coloring[v]) ? 1 : 0;
-				}
-			}
-		}
 		
 		#ifdef FAST_SEARCH_ENABLE
 		/*
@@ -760,18 +793,16 @@ namespace gls {
 			}
 			return result / 2;
 		}
-
+		
 		/*
 		 Method: score_guidance
-		 Uses the edge indicators and the edge weights arrays to calculate the guidance for a given colorung. 
+		 Uses the guidance structure to calculate the guidance for a given coloring. 
 		*/
-		uint score_guidance(){
-			if(W==0){
-				return 0;
-			}
+		uint score_guidance(const colors &coloring){
+			//if(W==0){ return 0; }
 			uint result = 0;
-			for (EdgeID e = 0; e < M; ++e){
-				result += indicators[e] * weights[e]; 
+			for(NodeID v = 0; v < N; v++){
+				result += guidance[K*v + coloring[v]];
 			}
 			return result / 2;
 		}
@@ -784,16 +815,14 @@ namespace gls {
 		*/
 		void make_move(const graph_access &G, colors &coloring, Score &score, Move next){
 			uint old = coloring[next.node];
-			for (NodeID u : G.neighbours(next.node)) {
+			
+			EdgeID until = G.get_first_invalid_edge(next.node);
+			for(EdgeID e = G.get_first_edge(next.node); e < until; e++){
+				NodeID u = G.getEdgeTarget(e);
 				conflicts[K*u + old]--;
 				conflicts[K*u + next.to]++;
-				#ifdef FAST_SEARCH_ENABLE
-				if(FAST_SEARCH){
-					for(color c=0;c<K;c++){
-						fast_search[K * u + c] = NODE_ALLOWED;
-					}
-				}
-				#endif
+				guidance[K*u + old] -= weights[e];
+				guidance[K*u + next.to] += weights[e];
 			}
 			
 			#ifdef FAST_SEARCH_ENABLE
@@ -845,25 +874,7 @@ namespace gls {
 					}
 					
 					conf = score.conflicts + conflicts[K*v + c] - conflicts[K*v + coloring[v]];
-					if(with_guidance){
-						uint g_add = 0, g_remove = 0;
-						
-						EdgeID until = G.get_first_invalid_edge(v);
-						for(EdgeID e = G.get_first_edge(v); e < until; e++){
-							NodeID u = G.getEdgeTarget(e);
-							
-							if(coloring[u] == coloring[v]){
-								g_remove += weights[e];
-							}
-							
-							if(coloring[u] == c){
-								g_add += weights[e];
-							}
-						}
-						
-						guid = score.guidance + g_add - g_remove;
-					}
-					
+					guid = score.guidance  + guidance[K*v + c]  - guidance[K*v + coloring[v]];
 					eval = build_score(conf, guid);
 					
 					if(eval.total < best.total){
@@ -938,8 +949,8 @@ namespace gls {
 		*/
 		~GuidedLocalSearch(){
 			delete [] conflicts;
+			delete [] guidance;
 			delete [] weights;
-			delete [] indicators;
 			#ifdef FAST_SEARCH_ENABLE
 			delete [] fast_search;
 			#endif
@@ -951,7 +962,8 @@ namespace gls {
 			K = k;
 			
 			conflicts = new uint[K * N];
-			indicators = new uint[M];
+			guidance = new uint[K * N];
+			
 			#ifdef FAST_SEARCH_ENABLE
 			fast_search = new uint[K * N];
 			#endif
@@ -974,14 +986,14 @@ namespace gls {
 			}
 			
 			update_conflicts(G, coloring);
-			update_indicators(G, coloring);
+			update_guidance(G, coloring);
 			
 			#ifdef FAST_SEARCH_ENABLE
 			clear_fast_search();
 			#endif
 			
 			solution = coloring;
-			solution_score = build_score(score_conflicts(solution), score_guidance());
+			solution_score = build_score(score_conflicts(solution), score_guidance(solution));
 			
 			uint first_update_total = 0;
 			uint first_update_iters = 0;
@@ -1091,7 +1103,7 @@ namespace gls {
 					#endif
 					
 					update_weights(G, improvement);
-					score = build_score(score.conflicts, score_guidance());
+					score = build_score(score.conflicts, score_guidance(improvement));
 					no_improve = 0;
 					resolution = SolveResolution::NotFound;
 				}
@@ -1136,8 +1148,7 @@ namespace gls {
 			return solution;
 		}
 	};
-
-
+	
 	/*
 	 Class: EpocheRunner
 	 Master of the Guided Local Search
