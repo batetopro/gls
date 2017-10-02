@@ -1,14 +1,11 @@
-// Turn on debugging
-#define DEBUGGING 1
-
-// Turn on fast search heuristic
-// #define FAST_SEARCH_ENABLE 1
-
 // Turn on dynammic lambda heuristic
-#define DYNAMIC_LAMBDA_ENABLE 1
+//#define DYNAMIC_LAMBDA_ENABLE 1
 
-// Turn on moves queue 
+// Turn on move queue
 #define MOVE_QUEUE_ENABLE 1
+
+// Turn on moves queue debugging 
+// #define DEBUG_QUEUE 1
 
 // Use .ini file configuration
 #include "../lib/SimpleIni.h"
@@ -16,8 +13,14 @@
 
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include <stack>
+#include <set>
 #include <ctime>
+#include <limits>
+#include <chrono>
+#define SENTINEL(T) (T{})
+
 
 namespace gls {
 	/*
@@ -29,11 +32,20 @@ namespace gls {
 	Alias for unisgned int.
 	*/
 	typedef unsigned int uint;
+	/* Type: ulong
+	Alias for unisgned long.
+	*/
+	typedef unsigned long ulong;
 	
 	/* Type: color
 	Alias for a int, representing a color.
 	*/
 	typedef uint color;
+	
+	/* Type: delta
+	Alias for a signed int, representing an improvement or a score structure.
+	*/
+	typedef signed short delta;
 	
 	/* Type: colors
 	Alias for std::vector<color>.
@@ -50,6 +62,12 @@ namespace gls {
 	*/
 	typedef typename std::vector<upair> upairs;
 	
+	/* Function: upair_comparator
+	Comparator for two elements of upairs.
+	*/
+	inline bool upair_comparator(upair i, upair j) {
+		return (i.second > j.second); 
+	}
 	
 	/*
 	 * ===========
@@ -64,7 +82,7 @@ namespace gls {
 	Bipartite   - Make a coloring with two colors, using a modified DFS. The coloring may have initial conflicts.
 	*/
 	enum BuildStrategy{ RandomStart, Greedy, Bipartite };
-	
+
 	/* Enum: EpocheStrategy
 	What to do between two sequent epoches -> going form k colors to k-1 colors in the searched coloring.
 	
@@ -111,7 +129,6 @@ namespace gls {
 	 * Configuration
 	 * =============
 	 */
-	
 	/* Constants: Configuration fields
 	BuildStrategy BUILD_STRATEGY 			- How to build initail graph coloring. Default: *Greedy*
 	EpocheStrategy UPDATE_STRATEGY      	- How to update the coloring between the epoches. Default: *Мерге*
@@ -121,8 +138,11 @@ namespace gls {
 	uint RESET_WEIGHTS 					  	- Should the weights be zeros between the epoches. Default: *Yes*
 	uint LOWER_BOUND 					  	- A given lower bound of the chromatic number. Default: *2*
 	uint MAX_ITER 					  		- Maximum number of iterations. Default: *1000000000*
-	uint MAX_NO_IMPROVE 					- Maximum number of not improving movements before a weights update. Default: *2*
-	uint LAMBDA 					  		- Coefficient for combining the conflicts and guidance scores. Default: *10*
+	uint MAX_PLATAEU 						- Maximum number of not improving movements before a weights update. Default: *2*
+	uint MAX_NO_IMPROVE 					- Maximum number of not improving movements before termination. Default: *20000*
+	delta LAMBDA 					  		- Coefficient for combining the conflicts and guidance scores. Default: *10*
+	uint MOVE_QUEUE 					  	- Enables the priority queues. Default: *1*
+	uint HEAD_CAPACITY 					  	- Capacity of the items fetched in the priority head. Default: *1*
 	uint DYNAMIC_LAMBDA 					- Sets lambda dynamiclly to the average conflicts decrease before guidance is used.
 	uint ASPIRATION 						- Enables the aspiration moves. Default: *Yes*
 	uint TIMEOUT 							- Maximum execution time of GLS in seconds. Default: *120*
@@ -136,8 +156,11 @@ namespace gls {
 	uint RESET_WEIGHTS = 1;
 	uint LOWER_BOUND = 2;
 	uint MAX_ITER = 0;
-	uint MAX_NO_IMPROVE = 2;
-	uint LAMBDA = 10;
+	uint MAX_PLATAEU = 2;
+	uint MAX_NO_IMPROVE = 20000;
+	delta LAMBDA = 10;
+	uint MOVE_QUEUE=1;
+	uint HEAD_CAPACITY=1;
 	uint DYNAMIC_LAMBDA = 1;
 	uint ASPIRATION = 1;
 	uint FAST_SEARCH = 1;
@@ -164,13 +187,6 @@ namespace gls {
 	const uint NODE_ALLOWED 		= 0;
 	const uint NODE_MARKED 			= 1;
 	
-	/* Function: upair_comparator
-	Comparator for two elements of upairs.
-	*/
-	inline bool upair_comparator(upair i, upair j) {
-		return (i.second > j.second); 
-	}
-	
 	/* Function: init
 	Initialize the solver by reading the .ini config file.
 	*/
@@ -189,8 +205,11 @@ namespace gls {
 		DYNAMIC_LAMBDA = atoi(ini.GetValue("gls", "DYNAMIC_LAMBDA", "0"));
 		LOWER_BOUND = atoi(ini.GetValue("gls", "LOWER_BOUND", "2"));
 		MAX_ITER = atoi(ini.GetValue("gls", "MAX_ITER", "0"));
-		MAX_NO_IMPROVE = atoi(ini.GetValue("gls", "MAX_NO_IMPROVE", "5"));
+		MAX_PLATAEU = atoi(ini.GetValue("gls", "MAX_PLATAEU", "2"));
+		MAX_NO_IMPROVE = atoi(ini.GetValue("gls", "MAX_NO_IMPROVE", "20000"));
 		LAMBDA = atoi(ini.GetValue("gls", "LAMBDA", "10"));
+		MOVE_QUEUE = atoi(ini.GetValue("gls", "MOVE_QUEUE", "1"));
+		HEAD_CAPACITY = atoi(ini.GetValue("gls", "HEAD_CAPACITY", "1"));
 		FAST_SEARCH = atoi(ini.GetValue("gls", "FAST_SEARCH", "1"));
 		ASPIRATION = atoi(ini.GetValue("gls", "ASPIRATION", "1"));
 		TIMEOUT = atoi(ini.GetValue("gls", "TIMEOUT", "120"));
@@ -214,7 +233,6 @@ namespace gls {
 	 * Structures
 	 * ==========
 	 */
-	
 	/* Struct: Score
 	GLS score of a coloring in a given moment.
 	*/
@@ -231,44 +249,146 @@ namespace gls {
 		Total score of the coloring. For implementation reasons it is equal to 10*conflicts + LAMBDA * guidance.
 		*/
 		uint total = 0;
+		
+		/* Field: total
+		Build a score by given conflicts and guidance
+		*/
+		inline static Score build(const uint &c, const uint &g){
+			Score result;
+			result.conflicts = c;
+			result.guidance = g;
+			result.total = (g) ? 10 * c + LAMBDA * g : 10 * c;
+			return result;
+		}
+	};
+	
+	/* Struct: DeltaScore
+	GLS delta score of a coloring in a given and the previous moment.
+	*/
+	struct DeltaScore{
+		/* Field: conflicts
+		Conflicts of the coloring.
+		*/
+		delta conflicts = 0;
+		/* Field: guidance
+		Guidance of the coloring.
+		*/
+		delta guidance = 0;
+		/* Field: total
+		Total score of the coloring. For implementation reasons it is equal to 10*conflicts + LAMBDA * guidance.
+		*/
+		delta total = 0;
+		
+		/* Field: total
+		Build a score by given conflicts and guidance
+		*/
+		inline static DeltaScore build(const delta &c, const delta &g){
+			DeltaScore result;
+			result.conflicts = c;
+			result.guidance = g;
+			result.total = (g) ? 10 * c + LAMBDA * g : 10 * c;
+			return result;
+		}
 	};
 	
 	/* Struct: Move
 	GLS iteration move
 	*/
 	struct Move{
+		/* Field: ID
+		ID of the move = K * node + to
+		*/
+		uint ID = -1;
 		/* Field: node
 		Which node to update.
 		*/
-		NodeID node;
+		NodeID node = 0;
 		/* Field: to
 		In which color to make the node.
 		*/
-		color to;
+		color to = 0;
 		/* Field: score
-		Score of the move
+		Delta score a.k.a score step of the move.
 		*/
-		Score score;
+		DeltaScore score;
+		
+		Move(){}
+		Move(const NodeID n, const color t, const color K){
+			ID = K * n + t;
+			node = n;
+			to = t;
+		}
 	};
 	
-	#ifdef DEBUGGING
+	/* Type: Moves
+	Alias for std::vector<Move>.
+	*/
+	typedef typename std::vector<Move> Moves;
 	
-	class Debugger{
-	public:
-		static void print_coloring(const colors &coloring){
-			for(color c: coloring){
-				std::cout << c << " ";
+	/* Type: MovesQueueNode
+	Combination of ID and score.
+	*/
+	struct MovesQueueNode{
+		size_t node;
+		DeltaScore score;
+		MovesQueueNode(size_t n, DeltaScore s){
+			node=n; score=s;
+		}
+	};
+	
+	/* Type: MoveTotalCompare
+	Compare moves based on their augumented score, ID
+	*/
+	struct MoveTotalCompare{
+		bool operator()(const Move& a, const Move& b) const {
+			if (a.score.total == b.score.total){ 
+				return a.ID < b.ID;
 			}
-			std::cout << std::endl;
+			return a.score.total < b.score.total;
 		}
 		
-		static void print_conflicts(uint* &data, const uint &N, const uint &K){
-			for(uint v = 0 ; v < N; v++){
-				for(uint c = 0; c < K ;c++){
-					std::cout << data[K*v + c] << " ";
-				}
-				std::cout << std::endl;
+		bool operator()(const MovesQueueNode& a, const MovesQueueNode& b) const {
+			return a.score.total <= b.score.total;
+		}
+		
+		bool weak(const MovesQueueNode& a, const MovesQueueNode& b) const {
+			return a.score.total < b.score.total;
+		}
+		
+		bool operator()(const DeltaScore& a, const DeltaScore& b) const {
+			return a.total <= b.total;
+		}
+		
+		bool weak(const DeltaScore& a, const DeltaScore& b) const {
+			return a.total < b.total;
+		}
+	};
+	
+	/* Type: MoveConflictsCompare
+	Compare moves based on their conflicts score, ID
+	*/
+	struct MoveConflictsCompare{
+		bool operator()(const Move& a, const Move& b) const {
+			if (a.score.conflicts == b.score.conflicts){ 
+				return a.ID < b.ID;
 			}
+			return a.score.conflicts < b.score.conflicts;
+		}
+		
+		bool operator()(const MovesQueueNode& a, const MovesQueueNode& b) const {
+			return a.score.conflicts <= b.score.conflicts;
+		}
+		
+		bool weak(const MovesQueueNode& a, const MovesQueueNode& b) const {
+			return a.score.conflicts < b.score.conflicts;
+		}
+				
+		bool operator()(const DeltaScore& a, const DeltaScore& b) const {
+			return a.total <= b.total;
+		}
+		
+		bool weak(const DeltaScore& a, const DeltaScore& b) const {
+			return a.total < b.total;
 		}
 	};
 	
@@ -276,77 +396,452 @@ namespace gls {
 	Report of GLS performance
 	*/
 	struct SolveReport{
-		/* Field: start
-		Starting score
-		*/
-		Score start;
+		uint e_iters;
+		uint s_iters;
 		
-		/* Field: end
-		Ending score
-		*/
-		Score end;
+		uint e_K;
+		uint s_K;
 		
-		/* Field: created
-		Timestamp of the start of the report
-		*/
-		uint created = 0;
+		uint e_improvements;
+		uint s_improvements;
 		
-		/* Field: created
-		Timestamp of the finishing moment of the report
-		*/
-		uint finished = 0;
+		uint e_aspirations;
+		uint s_aspirations;
 		
-		/* Field: iters
-		Iterations
-		*/
-		uint iters = 0;
+		uint e_updates;
+		uint s_updates;
 		
-		/* Field: updates
-		Weight updates
-		*/
-		uint updates = 0;
+		uint e_minimums;
+		uint s_minimums;
 		
-		/* Field: improvements
-		How many improvements were made
-		*/
-		uint improvements = 0;
+		Score e_start_score;
+		Score s_start_score;
 		
-		/* Field: aspirations
-		How many aspirations were made
-		*/
-		uint aspirations = 0;
+		Score e_final_score;
+		Score s_final_score;
 		
-		/* Field: mins
-		How many times there was a local minimum
-		*/
-		uint mins = 0;
+		uint first_update_total;
+		uint first_update_iters;
 		
-		/* Method: print
-		Print the report to stdout
-		*/
-		void print(const color &k = 0){
-			std::cout << k << ",";
-			std::cout << iters << ",";
-			std::cout << finished - created << ",";
-			std::cout << improvements << ",";
-			std::cout << mins << ",";
-			std::cout << updates << ",";
-			std::cout << aspirations << ",";
-			std::cout << start.conflicts << ",";
-			std::cout << start.guidance << ",";
-			std::cout << start.total << ",";
-			std::cout << end.conflicts << ",";
-			std::cout << end.guidance << ",";
-			std::cout << end.total << std::endl;
+		std::chrono::high_resolution_clock::time_point e_start;
+		std::chrono::high_resolution_clock::time_point s_start;
+		uint no_improves;
+		
+		double time_diff(std::chrono::high_resolution_clock::time_point start){
+			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::milli> time_span = now-start;
+			return time_span.count();
+		}
+		
+		void prepare(color K){
+			s_K = K;
+			
+			s_iters=0;
+			s_improvements = 0;
+			s_aspirations = 0;
+			s_start = std::chrono::system_clock::now();
+			
+			s_start_score.conflicts = 0;
+			s_start_score.guidance = 0;
+			s_start_score.total = 0;
+			
+			s_final_score.conflicts = 0;
+			s_final_score.guidance = 0;
+			s_final_score.total = 0;
+		}
+		
+		void prepare_epoch(color K, Score s){
+			e_K = K;
+			e_iters = 0;
+			e_improvements = 0;
+			e_aspirations = 0;
+			e_updates = 0;
+			e_minimums = 0;
+			
+			e_start = std::chrono::system_clock::now();
+			e_start_score = s;
+			s_start_score.conflicts += s.conflicts;
+			s_start_score.guidance += s.guidance;
+			s_start_score.total += s.total;
+			
+			first_update_total = 0;
+			first_update_iters = 0;
+			
+			no_improves = 0;
+			
+			if(DEBUG & DEBUG_MOVES){
+				std::cout << "START," << s_iters << "," << K << std::endl;
+			}
+		}
+		
+		void skip_epoch(color K){
+			s_K = K;
+			s_iters++;
+			if(DEBUG & DEBUG_SOLUTION){
+				std::cout << "SKIP," << K << std::endl;
+			}		
+		}
+		
+		void finish_epoch(Score s){
+			e_final_score = s;
+			
+			if(s.conflicts == 0){
+				s_K = e_K;
+				
+				s_final_score.conflicts = 0;
+				s_final_score.guidance = 0;
+				s_final_score.total = 0;
+				
+				s_iters += e_iters;
+				s_minimums += e_minimums;
+				s_updates += e_updates;
+				s_aspirations += e_aspirations;
+				s_improvements += e_improvements;
+			} else {
+				s_final_score = s;
+			}
+			
+			if(DEBUG && DEBUG_EPOCHE){
+				std::cout << e_K << "," << time_diff(e_start) << "," 
+							<< e_improvements << "," << e_minimums << "," << e_updates << "," << e_aspirations << ","
+							<< e_start_score.conflicts << "," << e_start_score.guidance << "," << e_start_score.total << ","
+							<< e_final_score.conflicts << "," << e_final_score.guidance << "," << e_final_score.total << std::endl;	
+			}
+		}
+		
+		void finish_solution(){
+			if(DEBUG && DEBUG_SOLUTION){
+				std::cout << s_K << "," << time_diff(s_start) << "," 
+							<< s_improvements << "," << s_minimums << "," << e_updates << "," << s_aspirations << ","
+							<< s_start_score.conflicts << "," << s_start_score.guidance << "," << s_start_score.total << ","
+							<< s_final_score.conflicts << "," << s_final_score.guidance << "," << s_final_score.total << std::endl;	
+			}
+		}
+		
+		void weight_update(){
+			if(DYNAMIC_LAMBDA && e_updates == 0){
+				if(first_update_iters){
+					delta nl = first_update_total / first_update_iters;
+					if(nl > 0){ LAMBDA  = nl; }
+				}
+			}
+			
+			no_improves = 0;
+			e_updates++;
+			
+			if(DEBUG & DEBUG_MINIMUM){ 
+				std::cout << "MIN," << e_iters + s_iters << std::endl; 
+			}
+		}
+		
+		SolveResolution minimum(){
+			e_minimums++;
+			//std::cout<<":M:"<<std::endl;
+			return check(SolveResolution::LocalMin);
+		}
+		
+		SolveResolution check_move(Move next){
+			if(next.score.total == 0){no_improves++;}
+			else{no_improves=0;}
+			if(DYNAMIC_LAMBDA && e_updates == 0){
+				first_update_iters++;
+				first_update_total += next.score.total;
+			}
+			return check(SolveResolution::NotFound);
+		}
+		
+		void report_move(Move next, Score s){
+			if(DEBUG & DEBUG_MOVES){
+				std::cout << "MOVE," << e_iters + s_iters 
+							<< "," << next.node << "," << next.to << "," 
+							<< s.conflicts << "," << s.guidance << "," << s.total << std::endl;
+			}	
+		}
+		
+		
+		SolveResolution check(SolveResolution result){
+			if(no_improves == MAX_PLATAEU){ 
+				result = SolveResolution::NoImprove; 
+			}
+			
+			if(MAX_NO_IMPROVE && no_improves >= MAX_NO_IMPROVE){
+				result = SolveResolution::MaxIterations;
+			}
+			
+			if(MAX_ITER && e_iters + s_iters > MAX_ITER){
+				result = SolveResolution::MaxIterations;
+			}
+			
+			if(TIMEOUT && time_diff(s_start) > TIMEOUT){
+				result = SolveResolution::Timeout; 
+			}
+			
+			return result;
+		}
+		
+		void aspiration(){
+			e_aspirations++;
+			//std::cout<<":A:"<<std::endl;
+		}
+		
+		void iteration(){
+			s_iters++;
+		}
+		
+		void improvement(Score s){
+			e_final_score = s;
+			e_improvements++;
+			if(DEBUG & DEBUG_MOVES){
+				std::cout << "IMPROVE," << s_iters << "," << s.conflicts << "," << s.guidance << "," << s.total << std::endl; 
+			}					
+			//std::cout << "I:" << s.conflicts << ":";
 		}
 	};
-	#endif 
-
+	
 	/*
 	 * =======
 	 * Classes
 	 * =======
 	 */
+	 /*
+	Class: MovesQueue
+	Priority queue for moves. 
+	Realises addressable binary heap with an additional lookup array.
+	
+	This class is based on the following work:
+		https://codereview.stackexchange.com/questions/75539/binary-heap-with-o1-lookup-and-olog-n-change-key
+	*/
+	template <typename T, typename Cmp = MoveTotalCompare>
+	class MovesQueue {
+		/*
+		Field: index
+		Associate each key with an index.
+		*/ 
+		uint* index;
+		
+		/*
+		Field: elems
+		Default representation is as a vector.
+		The zero element is awlays SANTINEL(T)
+		*/
+		std::vector<T> elems;
+		
+		
+		/*
+		Field: cmp
+		Comparator for sorting with the following meanings
+		*/
+		Cmp cmp;
+		
+		uint size=0;
+		
+		static inline uint parent(uint i) { return i >> 1; }
+		static inline uint left(uint i) { return i << 1; }
+		static inline uint right(uint i) { return (i << 1) + 1; }
+		
+		void siftUp(uint i){
+			while (i > 1 && cmp(elems[i], elems[parent(i)])) {
+				std::swap(elems[i], elems[parent(i)]);
+				std::swap(index[elems[i].ID], index[elems[parent(i)].ID]);
+				i = parent(i);
+			}
+		}
+		
+		// adjusts elems[i] assuming it's been modified to be smaller than its children
+		// runs in O(lgn) time, floats elems[i] down
+		void siftDown(uint i){
+			uint length = elems.size();
+			while (true) {
+				uint l = left(i), r = right(i);
+				uint largest = i;
+				
+				if (l < length && cmp(elems[l], elems[largest]))
+					largest = l;
+				
+				if (r < length && cmp(elems[r], elems[largest]))
+					largest = r;
+				
+				if (largest == i) { break; }
+				std::swap(elems[largest], elems[i]);
+				std::swap(index[elems[largest].ID], index[elems[i].ID]);
+				i = largest;
+			}
+		}
+		public:
+		// construction ------------
+		MovesQueue(){
+			cmp = Cmp();
+		}
+		
+		~MovesQueue(){
+			if(size){
+				delete [] index;
+			}
+		}
+		
+		void prepare(uint S){
+			size = S;
+			index = new uint[size];
+		}
+		
+		// query ---------------
+		bool empty() const  { return elems.size() <= 1; }
+		uint elements() const { return elems.size() - 1; }
+		
+		// Insert and extract_top are not supported operations
+		
+		// extraction ----------
+		T top() const       	{ return elems[1]; }
+		T key(uint ID) const 	{ return elems[index[ID]];}
+		
+		// runs in O(NlgN) time due to siftDown		
+		std::vector<T> extract(){
+			std::vector<T> data = std::vector<T>(); 
+			
+			std::vector<T> original = elems;
+			while(!empty()){
+				if (elems.size() <= 1) {break;}
+				
+				T top {elems[1]};
+				std::swap(elems[1], elems.back());
+				
+				elems.pop_back();
+				siftDown(1);
+				data.push_back(top);
+			}
+			
+			#ifdef DEBUG_QUEUE
+			for(uint i = 1; i < data.size(); i++){
+				if(!cmp(data[i-1], data[i])){ std::cout << "A"; }
+			}
+			#endif
+			
+			elems = original;
+			return data;
+		}
+		
+		std::vector<T> top_level(const colors &coloring, delta* conflicts, color &K){
+			std::vector<T> moves = std::vector<T>();
+			
+			size_t C, L, R;
+			T mv, best = elems[index[coloring[0]]];
+			
+			std::stack<size_t> DFS = std::stack<size_t>();
+			DFS.push(1);
+			while (!DFS.empty()) {
+				C = DFS.top(); 
+				DFS.pop();
+				if (C >= size){ continue; }
+				mv = elems[C];
+				if (!cmp(mv.score, best.score)){ continue; }
+				const uint sourceID = K * mv.node + coloring[mv.node];
+				
+				if(conflicts[sourceID] > 0 && coloring[mv.node] != mv.to){
+					if(cmp.weak(mv.score, best.score)){
+						best = mv;
+						moves = std::vector<T>();
+					}
+					
+					if(cmp(mv.score, best.score)){
+						moves.push_back(mv);
+						if(moves.size() > HEAD_CAPACITY){
+							return moves;
+						}
+					}
+				}
+				
+				L = MovesQueue::left(C), R = MovesQueue::right(C);
+				if (L < size && cmp(elems[L].score, best.score)){
+					DFS.push(L);
+				}
+				if(R < size && cmp(elems[R].score, best.score)){
+					DFS.push(R);
+				}
+			}
+			
+			return moves;
+		}
+		
+		// runs in O(HlgH) time due to DFS
+		std::vector<T> head(const colors &coloring, delta* conflicts, color &K){
+			if (HEAD_CAPACITY == 1){
+				std::vector<T> moves = std::vector<T>();
+				T mv = top();
+				if(conflicts[K*mv.node + coloring[mv.node]] > 0 && coloring[mv.node] != mv.to){ 
+					moves.push_back(mv);
+				}
+				return moves;
+			}
+			
+			return top_level(coloring, conflicts, K);
+		}
+		
+		// modification ----------
+		// O(n) like constructor for all elements
+		void build(const std::vector<T> &data) {
+			size = data.size();
+			index = new uint[size];
+			std::memset(index, 0, size);
+			
+			elems = std::vector<T>();
+			elems.reserve(size+1);
+			elems.push_back(T());
+			
+			for(size_t i = 0; i < data.size(); i++){
+				index[data[i].ID] = elems.size();
+				elems.push_back(data[i]);
+			}
+			
+			// runs in O(n) time, produces max heap from unordered input array
+			// second half of elems are leaves, 1 elem is maxheap by default
+			for (size_t i = elems.size() >> 1; i != 0; --i){
+				siftDown(i);
+			} 
+			
+			#ifdef DEBUG_QUEUE
+			std::cout << "MOVES LOADED: " << elements() << " " << is_heap() << " " << correct_index() << std::endl;
+			#endif
+		}
+		
+		// O(lgN) like change
+		void change(T key) {
+			if (cmp(elems[index[key.ID]], key)){
+				elems[index[key.ID]] = key;
+				siftDown(index[key.ID]);
+			} else {
+				elems[index[key.ID]] = key;
+				siftUp(index[key.ID]);
+			}
+			
+			#ifdef DEBUG_QUEUE
+			std::cout << "MOVES UPDATED: " << elements() << " " << is_heap() << " " << correct_index() << std::endl;
+			#endif
+		}
+		
+		// tests -----------------
+		bool is_heap() const {
+			size_t L, R;
+			for (size_t i = size >> 1; i != 0; --i){
+				L = MovesQueue::left(i);
+				R = MovesQueue::right(i);
+				if (L < size && !cmp(elems[i], elems[L])){ return false; }
+				if (R < size && !cmp(elems[i], elems[R])){ return false; }
+			}
+			return true;
+		}
+		
+		bool correct_index() const {
+			uint skip = 0;
+			for(uint i=0;i<size;++i){
+				if(index[i] == skip){continue;}
+				//std::cout << i << ": " << index[i] << " ";
+				//Debugger::print_move(elems[index[i]]);
+				if(i != elems[index[i]].ID){return false;}
+			}
+			return true;
+		}
+	};
+	
 	/*
 	Class: ColoringUpperBound
 	This class calculates the upper bound of the chromatic number of a given graph.
@@ -458,7 +953,6 @@ namespace gls {
 			}
 		}
 	};
-	
 	
 	/*
 	Class: ColoringBuilder
@@ -610,110 +1104,94 @@ namespace gls {
 		 Number of nodes
 		 */
 		uint N;
-		
 		/*
 		 Field: M
 		 Number of edges
 		 */
 		uint M;
-		
 		/*
 		 Field: K
 		 Number of colors
 		 */
 		uint K;
-		
-		/*
-		 Field: iters
-		 Number of iterations
-		 */
-		uint iters;
-		
-		/*
-		 Field: start
-		 Start moment of the first epoche
-		 */
-		uint start;
-		
 		/*
 		 Field: solution
 		 The best found so far solution in the current epoche
 		 */
 		colors solution;
-		
+		/*
+		 Field: neighbors
+		 List of all available one-exchange moves for the current improvement.
+		 */
+		Moves neighbors;
 		/*
 		 Field: solution_score
 		 The score of the best found so far solution in the current epoche
 		 */
 		Score solution_score;
-		
 		/*
 		 Field: conflicts
 		 Array with the conflicts with size K * N
 		 */
-		uint* conflicts;
-		
-		/*
-		 Method: update_conflicts
-		 Updates the conflicts structure according to a given coloring
-		 */
-		void update_conflicts(const graph_access &G, const colors &coloring){
-			for(NodeID v = 0; v < N; ++v) {
-				for(uint i = 0; i < K; ++i){
-					conflicts[K*v + i] = 0;
-				}		
-				for (NodeID u : G.neighbours(v)) {
-					conflicts[K*v + coloring[u]]++;
-				}
-			}
-		}
-				
+		delta* conflicts;
 		/*
 		 Field: guidance
 		 Array with the guidance with size K * N
 		 */
-		uint* guidance;
-		
-		/*
-		 Method: update_guidance
-		 Updates the guidance structure according to a given coloring
-		 */
-		void update_guidance(const graph_access &G, const colors &coloring){
-			for(NodeID v = 0; v < N; ++v) {
-				for(uint c = 0; c < K; ++c){
-					guidance[K*v + c] = 0;
-				}
-				EdgeID until = G.get_first_invalid_edge(v);
-				for(EdgeID e = G.get_first_edge(v); e < until; e++){
-					NodeID u = G.getEdgeTarget(e);
-					guidance[K*v + coloring[u]] += weights[e];
-				}
-			}
-		}
-		
+		delta* guidance;
 		/*
 		 Field: weights
 		 Array with the current weights of the edges
 		 */
-		uint* weights;
-		
+		delta* weights;
 		/*
-		 Method: clear_weights
-		 Sets the guidance weights to zeros.
+		 Field: Q
+		 Priority queue of all movements
+		 ORDER BY total ASC    
 		*/
-		void clear_weights(){
-			W = 0;
-			solution_score.guidance = 0;
-			for(uint i = 0; i < M; ++i){ weights[i] = 0; }
+		MovesQueue<Move, MoveTotalCompare> Q;
+		/*
+		 Field: A
+		 Priority queue of all movements
+		 ORDER BY conflicts ASC    
+		*/
+		MovesQueue<Move, MoveConflictsCompare> A;
+		/*
+		Method: build_structs
+		Builds the conflicts and guideance structures according to a given coloring of a graph G.
+		Additionally, if the CLEAR_WEIGHTS flags is up, the weights are cleaned.
+		Uf priority queues are used, then they are also build here.
+		*/
+		void build_structs(const graph_access &G, const colors &coloring){
+			uint ID;
+			for(NodeID v = 0; v < N; ++v) {
+				for(uint i = 0; i < K; ++i){
+					ID = K*v + i;
+					conflicts[ID] = 0;
+					guidance[ID]  = 0;
+				}
+				EdgeID until = G.get_first_invalid_edge(v);
+				for(EdgeID e = G.get_first_edge(v); e < until; ++e){
+					NodeID u = G.getEdgeTarget(e);
+					ID = K*v + coloring[u];
+					conflicts[ID]++;
+					if(RESET_WEIGHTS){
+						weights[e] = 0;
+					} else {
+						guidance[ID] += weights[e];
+					}
+				}
+			}
 		}
-		
 		/*
-		 Method: update_weights
-		 Calculates the utilites of the edges and then increment the value of the weights with 1 for edges having maximal utility.
+		Method: update_weights
+		Calculates the utilites of the edges and then increment the value of the weights with 1 for edges having maximal utility.
+		Returns the number of edges, which have changed weights.
+		Addituionally it updates the score to the new guidance.
 		*/
-		
-		void update_weights(const graph_access &G, const colors &coloring){
-			std::vector<std::pair<NodeID, EdgeID>> updates = std::vector<std::pair<NodeID, EdgeID>>();
+		Moves update_weights(const graph_access &G, const colors &coloring, Score &score){
+			std::vector<std::pair<NodeID, EdgeID>> E;// = std::vector<std::pair<NodeID, EdgeID>>();
+			std::set<NodeID> refresh = std::set<NodeID>();
 			
 			float max = 0, utility = 0;
 			for(NodeID v = 0; v < N; ++v) {
@@ -725,223 +1203,248 @@ namespace gls {
 					utility = 1.0 / float(1 + weights[e]);
 					if(utility > max){
 						max = utility;
-						updates = std::vector<std::pair<NodeID, EdgeID>>();
+						E = std::vector<std::pair<NodeID, EdgeID>>();
+						refresh = std::set<NodeID>();
 					}
 					
-					if(utility == max){						
+					if(utility == max){
 						std::pair<NodeID, EdgeID> update = std::make_pair(v, e);
-						updates.push_back(update);
+						E.push_back(update);
+						refresh.insert(v);
 					}
 				}
 			}
 			
-			for(std::pair<NodeID, EdgeID> update: updates){
-				//std::cout << p.first << " " << G.getEdgeTarget(p.second) << std::endl;
-				guidance[K * update.first + coloring[G.getEdgeTarget(update.second)]]++;
-				weights[update.second]++;
+			score = Score::build(score.conflicts, score.guidance + E.size() / 2);
+			for(std::pair<NodeID, EdgeID> edge: E){
+				guidance[K*edge.first + coloring[edge.first]]++;
+				weights[edge.second]++;
 			}
-			//std::cout << "--------------" << std::endl;
-			W += updates.size() / 2;
-		}
-		
-		/*
-		 Field: W
-		 Sum of the weights
-		*/
-		uint W = 0;
-		
-		#ifdef FAST_SEARCH_ENABLE
-		/*
-		 Field: fast_search
-		 Array, used for fast search, filled with node status values.
-		*/
-		uint* fast_search; 
-		
-		/*
-		 Method: clear_fast_search
-		 Initialize the fast search with zeros
-		*/
-		void clear_fast_search(){
-			for(NodeID v = 0; v < N; v++){
-				for(color c = 0; c < K; c++){
-					fast_search[K*v + c] = NODE_ALLOWED;
+			
+			uint src;
+			Move mv;
+			Moves updates = Moves();
+			for(NodeID v: refresh){
+				for(color c = 0; c < K; c++){						
+					src = K * v + coloring[v];
+					mv = Move(v, c, K);
+					mv.score = DeltaScore::build(conflicts[mv.ID] - conflicts[src], guidance[mv.ID] - guidance[src]);
+					updates.push_back(mv);
 				}
 			}
-		}
-		#endif
-		
-		/*
-		 Method: build_score
-		 Crerates a new score by combining given conflicts and guidance scores.
-		*/
-		inline Score build_score(const uint conflicts, const uint guidance){
-			Score result;
-			result.conflicts = conflicts;
-			result.guidance = guidance;
-			result.total = (W) ? 10 * conflicts + LAMBDA * guidance : 10 * conflicts;
-			return result;
-		}
-		
-		/*
-		 Method: score_conflicts
-		 Uses the conflicts neigbourhood array to calculate the conflicts of the nodes in a given colorung. 
-		*/
-		uint score_conflicts(const colors &coloring){
-			uint result = 0;
-			for(NodeID v = 0; v < N; v++){
-				result += conflicts[K*v + coloring[v]];
-			}
-			return result / 2;
-		}
-		
-		/*
-		 Method: score_guidance
-		 Uses the guidance structure to calculate the guidance for a given coloring. 
-		*/
-		uint score_guidance(const colors &coloring){
-			//if(W==0){ return 0; }
-			uint result = 0;
-			for(NodeID v = 0; v < N; v++){
-				result += guidance[K*v + coloring[v]];
-			}
-			return result / 2;
-		}
-		
-		/*
-		 Method: make_move
-		 Applies the next move to a given colring of the graph G with known score.
-		 
-		 Additionally, it applies the move to the conflicts array.
-		*/
-		void make_move(const graph_access &G, colors &coloring, Score &score, Move next){
-			uint old = coloring[next.node];
 			
+			return updates;
+		}
+		/*
+		Method: build_score
+		Builds the score of a given colorring.
+		*/
+		Score build_score(const colors &coloring){
+			uint c = 0, g = 0;
+			for(NodeID v = 0; v < N; v++){
+				c += conflicts[K*v + coloring[v]];
+				g += guidance[K*v + coloring[v]];
+			}
+			return Score::build(c / 2, g / 2);
+		}
+		/*
+		Method: make_move
+		Applies the next move to a given colring of the graph G with known score.
+		Additionally, it applies the move to the conflicts and guidance structures.
+		Returns a list with updated moves by applying the move.
+		*/
+		Moves make_move(const graph_access &G, colors &coloring, Score &score, Move next){
+			Moves updates = Moves();
+			Move mv;
+			
+			uint src, dest;
 			EdgeID until = G.get_first_invalid_edge(next.node);
 			for(EdgeID e = G.get_first_edge(next.node); e < until; e++){
 				NodeID u = G.getEdgeTarget(e);
-				conflicts[K*u + old]--;
-				conflicts[K*u + next.to]++;
-				guidance[K*u + old] -= weights[e];
-				guidance[K*u + next.to] += weights[e];
+				src = K*u + coloring[next.node], dest = K*u + next.to; 
+				
+				conflicts[src]--;
+				guidance[src] -= weights[e];
+				
+				conflicts[dest]++;
+				guidance[dest] += weights[e];
 			}
 			
-			#ifdef FAST_SEARCH_ENABLE
-			if(FAST_SEARCH){
-				fast_search[K * next.node + coloring[next.node]] = NODE_MARKED;
+			for(EdgeID e = G.get_first_edge(next.node); e < until; e++){
+				NodeID u = G.getEdgeTarget(e);
+				for(uint c = 0; c < K; c++){
+					mv = Move(u, c, K);
+					src = K * u + coloring[u];
+					mv.score = DeltaScore::build(conflicts[mv.ID] - conflicts[src], guidance[mv.ID] - guidance[src]);
+					updates.push_back(mv);
+				}
 			}
-			#endif
 			
-			score.conflicts = next.score.conflicts;
-			score.guidance = next.score.guidance;
-			score.total = next.score.total;
+			for(uint c = 0; c < K; c++){
+				mv = Move(next.node, c, K);
+				mv.score = DeltaScore::build(conflicts[mv.ID] - conflicts[next.ID], guidance[mv.ID] - guidance[next.ID]);
+				if(FAST_SEARCH && mv.ID == next.ID){
+					mv.score.total = std::numeric_limits<delta>::max();
+				}
+				updates.push_back(mv);
+			}
 			
+			score.conflicts += next.score.conflicts;
+			score.guidance  += next.score.guidance;
+			score.total 	+= next.score.total;
 			coloring[next.node] = next.to;
 			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_MOVES){
-				std::cout << "MOVE," << iters << "," << next.node << "," << next.to << "," << score.conflicts << "," << score.guidance << "," << score.total << std::endl;
-			}
-			#endif
+			return updates;
 		}
-		
 		/*
-		 Method: best_neighbours
-		 Searches the neighbourhood of a given coloring of graph G with known score.
-         
-		 Optionally, it can apply the augumented function.  
+		Method: update_neighbors
+		Update the neighbors according to a given list with updates moves.
+		Record the changes in the priority among the queues.
 		*/
-		std::vector<Move> best_neighbours(const graph_access &G, const colors coloring, Score score, bool with_guidance){
-			std::vector<Move> result = std::vector<Move>();
-			std::vector<Move> aspired = std::vector<Move>();
-			Score best = score;
-			Score eval;
-			
-			uint conf = 0, guid = 0;
-			uint min_conf = -1;
-			for(NodeID v = 0; v < N; ++v){
-				if(conflicts[K*v + coloring[v]] == 0){
+		void update_neighbors(Moves &updates){
+			for(Move mv: updates){
+				if(neighbors[mv.ID].score.conflicts == mv.score.conflicts &&
+					neighbors[mv.ID].score.guidance == mv.score.guidance){
 					continue;
 				}
 				
+				neighbors[mv.ID].score = mv.score;
+				
+				if(MOVE_QUEUE){
+					Q.change(neighbors[mv.ID]);
+					if(ASPIRATION){ A.change(neighbors[mv.ID]); }
+				}
+			}
+		}
+		/*
+		Method: build_neighbors
+		Biuld all available moves in the one-exchange neighborhood.
+		*/
+		Moves build_neighbors(const colors &coloring){
+			Moves moves = Moves();
+			moves.reserve(K * N);
+			for(NodeID v = 0; v < N; v++){
+				const uint sourceID = K*v + coloring[v];
 				for(uint c = 0; c < K; c++){
-					#ifdef FAST_SEARCH_ENABLE
-					if(FAST_SEARCH && fast_search[K*v + c] != NODE_ALLOWED){
-						continue;
+					Move mv = Move(v, c, K);
+					if (coloring[v] == c){
+						mv.score = DeltaScore::build(0, 0);
+					} else {
+						mv.score = DeltaScore::build(conflicts[mv.ID] - conflicts[sourceID], guidance[mv.ID] - guidance[sourceID]);
 					}
-					#endif
-					if(c == coloring[v]){
-						continue;
+					moves.push_back(mv);
+				}
+			}
+			return moves;
+		}
+		/*
+		Method: load_neighbors
+		Builds all neighbors and loads them in the priority queues.
+		*/
+		void load_neighbors(const colors &coloring){
+			neighbors = build_neighbors(solution);
+			if(MOVE_QUEUE){
+				Q.build(neighbors);
+				if(ASPIRATION){ A.build(neighbors); }
+			}
+		}
+		/*
+		Method: is_aspiration
+		Check if a movement is an aspiration according to a given solution score.
+		*/
+		bool is_aspiration(const Move &aspiration, const Score &score){
+			if(aspiration.score.total <= 0){ return false; }
+			if(score.conflicts + aspiration.score.conflicts >= solution_score.conflicts){ return false; }
+			report.aspiration();
+			return true;
+		}
+		/*
+		 Method: restrict_neighbours
+		 Restrict a moves list to the restricted one-exchange neighbourhood of a given coloring with estimated score.
+		*/
+		Moves restrict_neighbours(const Moves &neighbors, const colors &coloring, Score score){
+			Moves moves = Moves();
+			
+			if(MOVE_QUEUE){
+				if(ASPIRATION){
+					Moves aspirations = A.head(coloring, conflicts, K);
+					if(aspirations.size() > 0){
+						Move asp = aspirations.front();
+						if(is_aspiration(asp, score)){
+							moves.push_back(asp);
+							return moves;
+						}
+					}
+				}
+				moves = Q.head(coloring, conflicts, K);
+			} else {
+				MoveTotalCompare tCmp = MoveTotalCompare(); 
+				MoveConflictsCompare cCmp = MoveConflictsCompare(); 
+				
+				DeltaScore best = neighbors[coloring[0]].score;
+				DeltaScore asp = neighbors[coloring[0]].score;
+				
+				Moves aspirations = Moves();
+				
+				for(Move mv: neighbors){
+					const uint sourceID = K*mv.node + coloring[mv.node];
+					if(conflicts[sourceID] == 0){ continue; }
+					if(coloring[mv.node] == mv.to){ continue; }
+					if(tCmp.weak(mv.score, best)){
+						best = mv.score;
+						moves = Moves();
+					}
+					if(tCmp(mv.score, best)){
+						moves.push_back(mv);
 					}
 					
-					conf = score.conflicts + conflicts[K*v + c] - conflicts[K*v + coloring[v]];
-					guid = score.guidance  + guidance[K*v + c]  - guidance[K*v + coloring[v]];
-					eval = build_score(conf, guid);
-					
-					if(eval.total < best.total){
-						best = eval;
-						result = std::vector<Move>();
-					}
-					
-					if(eval.total == best.total){
-						Move next;
-						next.node = v;
-						next.to = c;
-						next.score = eval;
-						result.push_back(next);
-					}
-					
-					if(ASPIRATION){
-						if(min_conf > eval.conflicts){
-							min_conf = eval.conflicts;
-							aspired = std::vector<Move>();
+					if(ASPIRATION){					
+						if(cCmp.weak(mv.score, asp)){
+							asp = mv.score;
+							aspirations = Moves();
 						}
 						
-						if(eval.conflicts == min_conf && eval.conflicts < solution_score.conflicts && eval.total > score.total){
-							Move next;
-							next.node = v;
-							next.to = c;
-							next.score = eval;
-							aspired.push_back(next);
+						if(cCmp(mv.score, asp) && is_aspiration(mv, score)){
+							moves.push_back(mv);
 						}
+					}
+				}				
+				if(ASPIRATION && aspirations.size() > 0){
+					return aspirations;
+				}
+			}
+			
+			return moves;
+		}
+		/*
+		 Method: best_neighbours
+		 Full scan search of the restricted one-exchange neighbourhood of a given coloring
+		*/
+		Moves best_neighbours(const colors coloring){ 
+			Move best = Move();
+			Moves moves;
+			for(NodeID v = 0; v < N; v++){
+				const uint sourceID = K*v + coloring[v];
+				if(conflicts[sourceID] == 0){ continue; }
+				for(uint c = 0; c < K; c++){
+					if(coloring[v] == c){ continue; }
+					Move mv = Move(v, c, K);
+					mv.score = DeltaScore::build(conflicts[mv.ID] - conflicts[sourceID], guidance[mv.ID] - guidance[sourceID]);
+					if(mv.score.total < best.score.total){
+						best = mv;
+						moves = Moves();
+					}
+					if(mv.score.total == best.score.total){
+						moves.push_back(mv);
 					}
 				}
 			}
-			
-			if(aspired.size() > 0){
-				#ifdef DEBUGGING
-				if(DEBUG){
-					epoche_report.aspirations++;
-				}
-				#endif
-				return aspired;
-			}
-			
-			return result;
+			return moves;
 		}
 		
 		public:
-		#ifdef DEBUGGING
-		/*
-		 Field: epoche_report
-		 Struct for reporting the epoche.
-		*/
-		SolveReport epoche_report;
 		
-		/*
-		 Field: solution_report
-		 Struct for reporting the solution.
-		*/
-		SolveReport solution_report;
-		#endif
-		
-		
-		/*
-		 Method: GuidedLocalSearch
-		 Constructs a new solver, by setting the timer for the timeout.
-		*/
-		GuidedLocalSearch(){
-			start = std::time(nullptr);
-		}
+		SolveReport report;
 		
 		/*
 		 Method: ~GuidedLocalSearch
@@ -951,9 +1454,6 @@ namespace gls {
 			delete [] conflicts;
 			delete [] guidance;
 			delete [] weights;
-			#ifdef FAST_SEARCH_ENABLE
-			delete [] fast_search;
-			#endif
 		}
 		
 		void prepare(const graph_access &G, const colors &coloring, const uint &k){
@@ -961,14 +1461,17 @@ namespace gls {
 			M = G.number_of_edges();
 			K = k;
 			
-			conflicts = new uint[K * N];
-			guidance = new uint[K * N];
+			conflicts = new delta[K * N];
+			guidance = new delta[K * N];
+			weights = new delta[M];
+			for(EdgeID e = 0;e<M;e++){weights[e]=0;}
 			
-			#ifdef FAST_SEARCH_ENABLE
-			fast_search = new uint[K * N];
-			#endif
-			weights = new uint[M];
-			clear_weights();
+			if(MOVE_QUEUE){
+				Q.prepare(N * K);
+				if(ASPIRATION){ A.prepare(N * K); }
+			}
+			
+			report.prepare(K);
 		}
 		
 		/*
@@ -977,60 +1480,24 @@ namespace gls {
 		*/
 		colors solve(const graph_access &G, const colors &coloring, const uint k){
 			K = k;
-			if(DEBUG & DEBUG_MOVES){
-				std::cout << "START," << iters << "," << k << std::endl;
-			}
-			
-			if(RESET_WEIGHTS){ 
-				clear_weights(); 
-			}
-			
-			update_conflicts(G, coloring);
-			update_guidance(G, coloring);
-			
-			#ifdef FAST_SEARCH_ENABLE
-			clear_fast_search();
-			#endif
-			
+			build_structs(G, coloring);
 			solution = coloring;
-			solution_score = build_score(score_conflicts(solution), score_guidance(solution));
+			solution_score = build_score(solution);
+			if(solution_score.conflicts == 0){
+				report.skip_epoch(K);
+				return solution;
+			}
 			
-			uint first_update_total = 0;
-			uint first_update_iters = 0;
+			report.prepare_epoch(K, solution_score);
 			
-			uint no_improve = 0;
+			load_neighbors(solution);
+			
 			colors improvement = solution;
 			Score score = solution_score;
 			SolveResolution resolution = SolveResolution::NotFound;
 			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_EPOCHE){
-				epoche_report.created = std::time(nullptr);
-				epoche_report.start = solution_score;
-				epoche_report.improvements = 0;
-				epoche_report.aspirations = 0;
-				epoche_report.updates = 0;
-				epoche_report.mins = 0;
-				epoche_report.iters = 0;
-			}
-			
-			if(DEBUG & DEBUG_SOLUTION){
-				if(solution_report.iters == 0){
-					solution_report.created = std::time(nullptr);
-				}
-				solution_report.start.conflicts += solution_score.conflicts;
-				solution_report.start.guidance += solution_score.guidance;
-				solution_report.start.total += solution_score.total;
-			}
-			#endif
-			
 			while(resolution == SolveResolution::NotFound){
-				iters++;
-				#ifdef DEBUGGING
-				if(DEBUG){
-					epoche_report.iters++;
-				}
-				#endif
+				report.iteration();
 				
 				if(solution_score.conflicts == 0){
 					resolution = SolveResolution::Solved;
@@ -1038,79 +1505,31 @@ namespace gls {
 					break;
 				}
 				
-				std::vector<Move> moves = best_neighbours(G, improvement, score, W > 0);
+				Moves moves = restrict_neighbours(neighbors, improvement, score);
+				
 				if(moves.size() == 0){
-					resolution = SolveResolution::LocalMin;
-					#ifdef DEBUGGING
-					if(DEBUG){
-						epoche_report.mins++;
-					}
-					#endif
+					resolution = report.minimum();
 				} else {
 					Move next = moves[rand() % moves.size()];
-					no_improve = (score.total == next.score.total) ? no_improve + 1 : 0;
+					resolution = report.check_move(next);
 					
-					#ifdef DYNAMIC_LAMBDA_ENABLE
-						if(DYNAMIC_LAMBDA && W == 0){
-							first_update_iters++;
-							first_update_total += score.total - next.score.total;
-						}
-					#endif
+					Moves updates = make_move(G, improvement, score, next);
+					update_neighbors(updates);
 					
-					make_move(G, improvement, score, next);
-					
-					if(no_improve == MAX_NO_IMPROVE){
-						resolution = SolveResolution::NoImprove;
-					}
+					report.report_move(next, score);
 					
 					if(score.conflicts < solution_score.conflicts){
 						solution = improvement;
 						solution_score = score;
-						#ifdef DEBUGGING
-						if(DEBUG){
-							epoche_report.improvements++;
-							if(DEBUG & DEBUG_MOVES){
-								std::cout << "IMPROVE," << iters << "," << solution_score.conflicts << "," << solution_score.guidance << "," << solution_score.total << std::endl;
-							}
-						}
-						#endif
+						report.improvement(solution_score);
 					}
-				}
-				
-				if(MAX_ITER && iters > MAX_ITER){
-					resolution = SolveResolution::MaxIterations;
 				}
 				
 				if(resolution == SolveResolution::NoImprove || resolution == SolveResolution::LocalMin){
-					#ifdef DEBUGGING
-					if(DEBUG){
-						if(DEBUG & DEBUG_MINIMUM){
-							std::cout << "MIN," << iters << std::endl;
-						}
-						epoche_report.updates++;
-					}
-					#endif
-					
-					#ifdef DYNAMIC_LAMBDA_ENABLE
-						if(DYNAMIC_LAMBDA > 0 && W == 0){
-							if(first_update_iters){
-								LAMBDA = first_update_total / first_update_iters;
-								if (LAMBDA == 0){ LAMBDA = 10; }
-							} else {
-								LAMBDA = 10;
-							}
-						}
-					#endif
-					
-					update_weights(G, improvement);
-					score = build_score(score.conflicts, score_guidance(improvement));
-					no_improve = 0;
+					report.weight_update();
+					Moves updates = update_weights(G, improvement, score);
+					update_neighbors(updates);
 					resolution = SolveResolution::NotFound;
-				}
-				
-				
-				if(TIMEOUT && std::time(nullptr) - start > TIMEOUT){
-					resolution = SolveResolution::Timeout;
 				}
 				
 				if(solution_score.conflicts == 0){
@@ -1119,31 +1538,7 @@ namespace gls {
 				}
 			}
 			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_EPOCHE){
-				epoche_report.end = solution_score;
-				epoche_report.finished = std::time(nullptr);
-				epoche_report.print(K);
-			}
-			
-			if(DEBUG & DEBUG_SOLUTION){
-				if(resolution == SolveResolution::Solved){
-					solution_report.end.conflicts = 0;
-					solution_report.end.guidance = 0;
-					solution_report.end.total = 0;
-					solution_report.finished = std::time(nullptr);
-					solution_report.iters += epoche_report.iters;
-					solution_report.mins += epoche_report.mins;
-					solution_report.updates += epoche_report.updates;
-					solution_report.aspirations += epoche_report.aspirations;
-					solution_report.improvements += epoche_report.improvements;
-				} else {
-					solution_report.end.conflicts = score.conflicts;
-					solution_report.end.guidance = score.guidance;
-					solution_report.end.total = score.total;
-				}
-			}
-			#endif
+			report.finish_epoch(solution_score);
 			
 			return solution;
 		}
@@ -1337,11 +1732,7 @@ namespace gls {
 				filtered = filter(G, result, k);
 			}
 			
-			#ifdef DEBUGGING
-			if(DEBUG & DEBUG_SOLUTION){
-				solver.solution_report.print(get_colors(result));
-			}
-			#endif
+			solver.report.finish_solution();
 			
 			if (DEBUG & DEBUG_OUTPUT){
 				if(evaluate(G, result) == 0){
